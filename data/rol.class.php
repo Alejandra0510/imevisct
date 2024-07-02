@@ -324,27 +324,23 @@ class cRol extends BD {
         if ($this->getFiltro() != "") {
            $array_f = $this->getArraySearch();
 
-            if(isset($array_f["idr_b"]) && $array_f["idr_b"] != ""){
-                $condition .= " AND id = ".$array_f["idr_b"]." ";
+            if(isset($array_f["rolb"]) && $array_f["rolb"] != ""){
+                $condition .= " AND rol LIKE '%".$array_f["rolb"]."%' ";
             }
 
-            if(isset($array_f["rol_b"]) && $array_f["rol_b"] != ""){
-                $condition .= " AND rol LIKE '%".$array_f["rol_b"]."%' ";
-            }
-
-            if(isset($array_f["des_b"]) && $array_f["des_b"] != ""){
-                $condition .= " AND descripcion LIKE '%".$array_f["des_b"]."%' ";
+            if(isset($array_f["desb"]) && $array_f["desb"] != ""){
+                $condition .= " AND descripcion LIKE '%".$array_f["desb"]."%' ";
             }
         }
 
-        $query = " SELECT id, 
+        $query = " SELECT id_rol, 
                           rol, 
                           descripcion, 
                           activo
                      FROM ws_rol
                     WHERE 1 = 1
                       $condition
-                 ORDER BY id DESC " . $milimite;
+                 ORDER BY id_rol DESC " . $milimite;
                 //  die($query);
         $result = $this->conn->prepare($query);
         $result->execute();
@@ -359,13 +355,13 @@ class cRol extends BD {
             $condition .= " AND id > 1 ";
         }
 
-        $query = " SELECT id, 
+        $query = " SELECT id_rol, 
                           rol, 
                           descripcion  
                      FROM ws_rol 
                     WHERE activo = 1 
                     $condition
-                   ORDER BY id ASC";
+                   ORDER BY id_rol ASC";
                 // die($query);
         $result = $this->conn->prepare($query);
         $result->execute();

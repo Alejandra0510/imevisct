@@ -12,10 +12,12 @@ const stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader
 module.exports = {
     mode: 'development',
     entry: {
-        main:     './src/index.js',
-        login:    './src/js/components/login.js',
-        business: './src/js/components/business.js',
-        account:  './src/js/components/sys/account.js',
+        main:            './src/index.js',
+        login:           './src/js/components/login.js',
+        business:        './src/js/components/business.js',
+        account:         './src/js/components/sys/account.js',
+        role:            './src/js/components/admin/roles.js',
+        rolem:           './src/js/components/admin/roles.magnament.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -62,11 +64,27 @@ module.exports = {
                 'account'
             ]
         }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/roles.php',
+            inject: 'body',
+            chunks: [
+                'role'
+            ]
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/roles.magnament.php',
+            inject: 'body',
+            chunks: [
+                'rolem'
+            ]
+        }),
         new CopyPlugin({
             patterns: [
                 { from: "src/assets", to: "assets/" }
             ]
-        })
+        }),
     ],
     module: {
         rules: [

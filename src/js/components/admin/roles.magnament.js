@@ -1,3 +1,4 @@
 import Swal from 'sweetalert2';
 import '@sweetalert2/theme-dark/dark.min.css';
-import '../../css/carga.css';
+
+import { sel, deshabilitarboton, habilitaboton } from '../../helpers/general';

@@ -62,7 +62,7 @@ try{
             
         $_SESSION[s_ncompleto]  = $datos['nombrecompleto'];
         $_SESSION[s_nombre]     = $datos['nombre'];
-        $_SESSION[s_sexo]       = $datos['sexo'];
+        $_SESSION[s_sexo]       = $datos['id_genero'];
         $_SESSION[s_img]        = $datos['img'];
         $_SESSION[s_f_i]        = $datos['fecha_ingreso'];
         $_SESSION[id_usr]       = $datos['id_usuario'];
@@ -72,7 +72,6 @@ try{
         $_SESSION[admin]        = $datos['admin'];     
         $_SESSION[id_direccion] = $datos['id_direccion'];
         $_SESSION[id_area]      = $datos['id_area'];
-        $carpeta_go		        = $datos["carpeta"];  
 
         $cUsers->setId_usuario($_SESSION[id_usr]);
 

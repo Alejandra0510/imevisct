@@ -31,3 +31,5 @@ define('looked',       'tram_lock_session_cer'.$proyId );
 define('_editar_',     's_peditar_tram_cer'.$proyId );
 define('_is_view_',    's_is_v_tram_cer'.$proyId );
 define('_id_estatus_', 'id_estatus_cer'.$proyId );
+
+define('array_filtros', 'array_filtros_busqueda'.$proyId);

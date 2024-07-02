@@ -13,6 +13,8 @@ module.exports = {
         login:           './src/js/components/login.js',
         business:        './src/js/components/business.js',
         account:         './src/js/components/sys/account.js',
+        role:            './src/js/components/admin/roles.js',
+        rolem:           './src/js/components/admin/roles.magnament.js',
     },
     output: {
         path: __dirname + '/build',
@@ -58,6 +60,22 @@ module.exports = {
             inject: 'body',
             chunks: [
                 'account'
+            ]
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/roles.php',
+            inject: 'body',
+            chunks: [
+                'role'
+            ]
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/roles.magnament.php',
+            inject: 'body',
+            chunks: [
+                'rolem'
             ]
         }),
         new CopyPlugin({

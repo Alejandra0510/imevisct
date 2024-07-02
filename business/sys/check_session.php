@@ -38,8 +38,9 @@ if (!isset($_SESSION[id_usr]) || $_SESSION[id_usr]=="") //SI NO HA INICIADO SESS
                                 $_SESSION[imp]    = $arrcount->imp;
                                 $_SESSION[edit]   = $arrcount->edit;
                                 $_SESSION[elim]   = $arrcount->elim;
-                                $_SESSION[nuev]   = $arrcount->nuevo;
-                                $_SESSION[export] = $arrcount->exportar;
+                                $_SESSION[nuev]   = $arrcount->new;
+                                $_SESSION[export] = $arrcount->export;
+                                
                                 if($sys_tipo <> 0){
                                     $rol_found = true;
                                     switch ($sys_tipo){

@@ -676,30 +676,26 @@ class cUsers extends BD
 
     public function getUser() {
 
-        $query = " SELECT U.id_usuario, 
-                          U.id_rol, 
+        $query = " SELECT U.id_usuario,
+                          U.id_rol,
                           U.id_direccion,
-                          U.id_area, 
-                          U.id_aplicativo,
-                          U.usuario, 
-                          U.nombre, 
+                          U.id_area,
+                          U.usuario,
+                          U.nombre,
                           U.admin,
-                          CONCAT_WS(' ', U.nombre, U.apepa, U.apema) AS nombrecompleto, 
+                          CONCAT_WS(' ', U.nombre, U.apepa, U.apema) AS nombrecompleto,
                           U.correo,
-                          U.sexo, 
-                          U.img, 
-                          DATE_FORMAT(U.fec_ingreso, '%d/%m/%Y') AS fecha_ingreso,
-                          U.imp, 
-                          U.edit, 
-                          U.elim, 
-                          U.nuev, 
-                          R.rol, 
-                          M.link AS carpeta,
-                          C.descripcion
+                          U.id_genero,
+                          U.img,
+                          DATE_FORMAT(U.fecha_ingreso, '%d/%m/%Y') AS fecha_ingreso,
+                          U.imp,
+                          U.edit,
+                          U.elim,
+                          U.new,
+                          U.externo,
+                          R.rol
                      FROM ws_usuario AS U 
-                LEFT JOIN ws_rol AS R ON R.id = U.id_rol
-                LEFT JOIN ws_menu AS M ON  R.id_menu_ini = M.id
-                LEFT JOIN cat_aplicativo as C on u.id_aplicativo = C.id_aplicativo
+                LEFT JOIN ws_rol AS R ON R.id_rol = U.id_rol
                     WHERE usuario = '". $this->getUsuario()."' 
                       AND clave = '".$this->getClave()."' 
                       AND U.activo = 1
@@ -781,9 +777,8 @@ class cUsers extends BD
                            id_rol, 
                            id_direccion, 
                            id_area,
-                           id_modulo, 
                            usuario, 
-                           sexo, 
+                           id_genero, 
                            nombre, 
                            apepa, 
                            apema, 
@@ -791,14 +786,14 @@ class cUsers extends BD
                            imp, 
                            edit, 
                            elim, 
-                           nuev, 
+                           new, 
                            img, 
                            admin, 
-                           activo,
-                           id_aplicativo
+                           activo
                       FROM ws_usuario
                     WHERE  id_usuario = ".$this->getId_usuario() ." LIMIT 1";
-                    // die($query);
+                // die($query);
+
         $result = $this->conn->prepare($query);
         $result->execute();
         return $result;

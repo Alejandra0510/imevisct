@@ -54,7 +54,7 @@ if(!isset($id) || !is_numeric($id) || $id<= 0){
         $id_usuario  = $arrEdi->id_usuario;
         $id_rol      = $arrEdi->id_rol;
         $usuario     = $arrEdi->usuario;
-        $sexo        = $arrEdi->sexo;
+        $sexo        = $arrEdi->id_genero;
         $nombre      = $arrEdi->nombre;
         $apepa       = $arrEdi->apepa;
         $apema       = $arrEdi->apema;
@@ -62,7 +62,7 @@ if(!isset($id) || !is_numeric($id) || $id<= 0){
         $imp         = $arrEdi->imp;
         $edit        = $arrEdi->edit;
         $elim        = $arrEdi->elim;
-        $nuev        = $arrEdi->nuev;
+        $nuev        = $arrEdi->new;
         $activo      = $arrEdi->activo;
         $admin       = $arrEdi->admin;
     }else{
@@ -129,7 +129,8 @@ if(!isset($id) || !is_numeric($id) || $id<= 0){
                             </header>
                             <div class="tools">
                                 <span class="<?php echo $class_activo?>" 
-                                    title="Usuario Activo"></span>
+                                      title="Usuario Activo">
+                                </span>
                             </div>
                         </div>
                         <div class="card-body">
@@ -224,10 +225,10 @@ if(!isset($id) || !is_numeric($id) || $id<= 0){
                                                                 id="sexo" 
                                                                 class="form-control" 
                                                                 required 
-                                                                readonly>
+                                                                disabled>
                                                             <option value=""></option>
-                                                            <option value="1" <?php if ($sexo == 1) { echo "selected";} ?>>Masculino</option>
-                                                            <option value="2" <?php if ($sexo == 2) { echo "selected";} ?>>Femenino</option>
+                                                            <option value="1" <?php if ($sexo == 1) { echo "selected";} ?>>Femenino</option>
+                                                            <option value="2" <?php if ($sexo == 2) { echo "selected";} ?>>Masculino</option>
                                                         </select>
                                                         <label for="sexo">
                                                             Sexo: <span class="text-danger">*</span>
@@ -239,7 +240,7 @@ if(!isset($id) || !is_numeric($id) || $id<= 0){
                                         <br>
                                         <fieldset>
                                             <div class="row">
-                                                <div class="col-sm-12 col-md-4 col-xs-12 col-lg-4">
+                                                <div class="col-sm-12 col-md-4 col-xs-12 col-lg-4 col-lg-offset-4">
                                                     <button type="button" 
                                                             class="btn ink-reaction btn-block" 
                                                             style="background-color: #0d47a1; color:white;"

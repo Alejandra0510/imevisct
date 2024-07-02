@@ -1,10 +1,9 @@
 <?php
 session_start();
 $dir_fc = "../../../";
-/*--------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------*/
 include_once $dir_fc.'connections/trop.php'; //Inclueye configuración de fecha y  hora de mexico
 include_once $dir_fc.'connections/php_config.php'; //Inclueye configuración de fecha y  hora de mexico
-/*-----------------------------------      Estableciendo la Clases  --------------------------------------*/
 include_once $dir_fc.'data/users.class.php';
 
 $cData = new cUsers();

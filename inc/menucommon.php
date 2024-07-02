@@ -47,20 +47,11 @@
                     $padreActivo = "active expanded";
                 }else{
                     $activo = "";
-                }
-
-                $strAccesskey = "";
-                $strBadgeAk   = "";
-
-                if( $row2->accesskey != null ) {
-                    $strAccesskey = "accesskey='".$row2->accesskey."'";
-                    $strBadgeAk   = "<span class='badge '>(". $row2->accesskey .")</span>";
-                } 
-                    
+                }                   
 
                 $menu.="<li class='".$activo."'>
-                            <a href='".$raiz.$row2->link."' $strAccesskey>
-                                <span class='title'> <i class='$row2->class'></i> ".$row2->texto." $strBadgeAk</span>
+                            <a href='".$raiz.$row2->link."'>
+                                <span class='title'> <i class='$row2->class'></i> ".$row2->texto."</span>
                                 
                             </a>
                         </li>";

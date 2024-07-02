@@ -12,6 +12,9 @@ function call($controller, $action) {
         case 'controlador/sys':
             $controller = new Sys();
             break;
+        case 'controlador/admin/sis_roles':
+            $controller = new admin_roles();
+            break;
     }
     $controller->{ $action }();
 }
@@ -20,6 +23,7 @@ $controllers = array(
     'controlador'                         => ['index'],
     'controlador/business'                => ['show'],
     'controlador/sys'                     => ['account'],
+    'controlador/admin/sis_roles'         => ['ver', 'index', 'nuevo'],
 );
 
 if (array_key_exists($controller, $controllers)) {

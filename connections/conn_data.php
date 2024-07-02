@@ -32,22 +32,6 @@ class BD
 		}
 	}
 
-/*
-	public function beginTransaction(){
-		return $this->_connection->beginTransaction();
-	}
-
-	public function commit(){
-		return $this->_connection->commit();
-	}
-
-	public function rollback(){
-		return $this->_connection->rollBack();
-	}
-	public function lastInsertId(){
-		return $this->_connection->lastInsertId();
-	}
-*/
 	public function prepare($sql)
 	{
 		return $this->_connection->prepare($sql);
