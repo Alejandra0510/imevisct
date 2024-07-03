@@ -18,6 +18,8 @@ module.exports = {
         account:         './src/js/components/sys/account.js',
         role:            './src/js/components/admin/roles.js',
         rolem:           './src/js/components/admin/roles.magnament.js',
+        user:            './src/js/components/admin/usuarios.js',
+        userm:           './src/js/components/admin/usuarios.magnament.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -78,6 +80,22 @@ module.exports = {
             inject: 'body',
             chunks: [
                 'rolem'
+            ]
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/usuarios.php',
+            inject: 'body',
+            chunks: [
+                'user'
+            ]
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/nocontent.html',
+            filename: './components/usuarios.magnament.php',
+            inject: 'body',
+            chunks: [
+                'userm'
             ]
         }),
         new CopyPlugin({

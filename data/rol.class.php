@@ -377,7 +377,7 @@ class cRol extends BD {
                              link  
                         FROM ws_menu 
                        WHERE id_grupo = 0 
-                        AND activo = 1 
+                         AND activo = 1 
                     ORDER BY id ASC";
                     // echo $query;
             $result = $this->conn->prepare($query);
@@ -411,16 +411,16 @@ class cRol extends BD {
     }
 
 
-    public function checarRol_menu(){
+    public function checarRol_menu( $id_menu ){
         try{
-            $query ="   SELECT id, 
+            $query ="   SELECT id_rol_menu, 
                                imp, 
                                edit, 
-                               nuevo, 
+                               new, 
                                elim, 
-                               exportar 
+                               export 
                           FROM ws_rol_menu 
-                         WHERE id_menu = ".$this->getId_menu()." 
+                         WHERE id_menu = $id_menu
                            AND id_rol = ".$this->getId()." ";
                         //    echo $query;
             $result = $this->conn->prepare($query);
@@ -434,12 +434,12 @@ class cRol extends BD {
 
     public function getRolbyId(){
         
-        $query = "  SELECT id, 
+        $query = "  SELECT id_rol, 
                            rol, 
                            descripcion, 
                            activo 
                       FROM ws_rol 
-                     WHERE id = ".$this->getId();
+                     WHERE id_rol = ".$this->getId();
         $result   = $this->conn->prepare($query);
         $result->execute();
         return $result;
@@ -453,7 +453,7 @@ class cRol extends BD {
         $update     = " UPDATE  ws_rol 
                            SET  rol         = ?, 
                                 descripcion = ?
-                          WHERE id          = ? ";
+                          WHERE id_rol      = ? ";
 
         $result = $this->conn->prepare($update);
         $exec->beginTransaction();
@@ -475,6 +475,7 @@ class cRol extends BD {
 
         return $correcto;
     }
+    
 
     public function insertReg( $data ){
         $exec = $this->conn->conexion();
@@ -498,29 +499,30 @@ class cRol extends BD {
         return $correcto;        
     }
 
-    public function insertRegdtl(){
+    public function insertRegdtl( $data_dtl ){
         $exec = $this->conn->conexion();
         $correcto   = 1;
 
         $insert_dtl ="INSERT INTO ws_rol_menu(id_rol, 
                                               id_menu, 
-                                              imp, 
-                                              nuevo,
-                                              edit, 
-                                              elim, 
-                                              exportar) 
-                                      VALUES (".$this->getId().", 
-                                              ".$this->getId_menu().", 
-                                              ".$this->getImprimir().", 
-                                              ".$this->getNuevo().",
-                                              ".$this->getEditar().", 
-                                              ".$this->getEliminar().", 
-                                              ".$this->getExportar().")";
+                                              imp,
+                                              edit,
+                                              elim,
+                                              new,
+                                              export) 
+                                      VALUES (?,
+                                              ?,
+                                              ?,
+                                              ?,
+                                              ?,
+                                              ?,
+                                              ?)";
                                     // echo $insert_dtl;
                                     
         $result = $this->conn->prepare($insert_dtl);
         $exec->beginTransaction();
-        $result->execute();
+        $result->execute( $data_dtl );
+
         if ($correcto == 1){
             $correcto= $exec->lastInsertId();
         }
@@ -551,7 +553,7 @@ class cRol extends BD {
 
         $update = " UPDATE ws_rol 
                        SET activo = $tipo
-                     WHERE id = ".$this->getId();
+                     WHERE id_rol = ".$this->getId();
 
         $result = $this->conn->prepare($update);
         $exec->beginTransaction();
@@ -564,7 +566,7 @@ class cRol extends BD {
     public function deleteReg(){
         $correcto   = 2;
         $delete     = "DELETE FROM ws_rol 
-                             WHERE id = ".$this->getId();
+                             WHERE id_rol = ".$this->getId();
 
         $result = $this->conn->prepare($delete);
         $result->execute();

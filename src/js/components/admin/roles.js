@@ -64,3 +64,70 @@ const handleSubmitSearch = ( frm ) =>  {
         habilitaboton('btn_search');
     });
 }
+
+
+window.handleDeleteReg = ( id, type, nivel ) => {
+
+    const icon = (type == 3) ? 'warning' : 'info';
+    const showDelete = (type == 0) ? ' dar de baja' :
+        (type == 3) ? ' eliminar' : ' dar de alta';
+
+    Swal.fire({
+        title: `¿Estás seguro de ${ showDelete } el registro?`,
+        text: "",
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Aceptar'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            changeStatus(id, type);
+        }
+    });
+
+}
+
+const changeStatus = (id, status) => {
+
+    const data = new FormData();
+
+    data.append('id', id);
+    data.append('tipo', status);
+
+    const url = 'business/admin/sis_roles/ajax/update_status.php';
+
+    fetch(url, {
+            method: 'POST',
+            body: data
+        })
+        .then((resp) => resp.json())
+        .then(function({ done, resp, icon }) {
+            if (done == 1) {
+                Swal.fire({
+                        title: '¡Listo!',
+                        text: resp,
+                        icon: icon
+                    })
+                    .then(() => {
+                        location.reload()
+                    });
+            } else {
+                Swal.fire({
+                    icon: icon,
+                    title: 'Oops...',
+                    text: resp
+                });
+            }
+            habilitaboton('btn_aceptar_cpw');
+        })
+        .catch(function(error) {
+            Swal.fire({
+                icon: 'error',
+                title: ':( ...',
+                text: error
+            });
+            habilitaboton('btn_aceptar_cpw');
+        });
+}

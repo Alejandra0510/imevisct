@@ -48,7 +48,12 @@
                             </a>
                         </li>
                         <li class="divider"></li>
-                        <!-- <li><a href="<?php echo $raiz?>business/sys/lockscreen.php"><i class="fa fa-fw fa-lock"></i> Bloquear</a></li> -->
+                        <!-- <li>
+                            <a href="<?php echo $raiz?>business/sys/lockscreen.php">
+                                <i class="fa fa-fw fa-lock"></i> 
+                                Bloquear
+                            </a>
+                        </li> -->
                         <li>
                             <a href="<?php echo $raiz?>business/sys/logout.php">
                                 <i class="fa fa-fw fa-power-off text-danger"></i> 

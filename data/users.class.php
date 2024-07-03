@@ -707,13 +707,10 @@ class cUsers extends BD
     }
 
     
-    public function getAllReg( $id_rol, $id_aplicativo){
+    public function getAllReg(){
         //Inicio fin son para paginado
         $milimite      = "";
         $condition     = "";
-        $condition_ext = "";
-
-        $condProfile = ( $id_rol > 1 ) ? ' AND u.id_usuario > 1 ' : '';
 
         if ($this->getLimite() == 1){ $milimite = "LIMIT ".$this->getInicio().", ".$this->getFin();}
         $filtro = $this->getFiltro();
@@ -722,31 +719,27 @@ class cUsers extends BD
 
             $array_f = $this->getArraySearch();
 
-            if(isset($array_f["id_u"]) && $array_f["id_u"] != ""){
-                $condition .= " AND id_usuario = ".$array_f["id_u"]." ";
-            }
+            // if(isset($array_f["id_u"]) && $array_f["id_u"] != ""){
+            //     $condition .= " AND id_usuario = ".$array_f["id_u"]." ";
+            // }
 
-            if (isset($array_f["dc_u"]) && $array_f["dc_u"] != "") {
-                $condition .= " AND id_direccion = " . $array_f["dc_u"] . " ";
-            }
+            // if (isset($array_f["dc_u"]) && $array_f["dc_u"] != "") {
+            //     $condition .= " AND id_direccion = " . $array_f["dc_u"] . " ";
+            // }
 
-            if (isset($array_f["us_u"]) && $array_f["us_u"] != "") {
-                $condition .= " AND usuario LIKE '%" . $array_f["us_u"] . "%' ";
-            }
+            // if (isset($array_f["us_u"]) && $array_f["us_u"] != "") {
+            //     $condition .= " AND usuario LIKE '%" . $array_f["us_u"] . "%' ";
+            // }
 
-            if (isset($array_f["no_u"]) && $array_f["no_u"] != "") {
-                $condition .= " AND (CONCAT_WS(' ', u.nombre, u.apepa, u.apema) 
-                                LIKE '%".$array_f["no_u"]."%'
-                                 OR u.usuario LIKE '%".$array_f["no_u"]."%' )";
-            }
+            // if (isset($array_f["no_u"]) && $array_f["no_u"] != "") {
+            //     $condition .= " AND (CONCAT_WS(' ', u.nombre, u.apepa, u.apema) 
+            //                     LIKE '%".$array_f["no_u"]."%'
+            //                      OR u.usuario LIKE '%".$array_f["no_u"]."%' )";
+            // }
             
-            if(isset($array_f["rl_u"]) && $array_f["rl_u"] != ""){
-                $condition.= " AND u.id_rol = '".$array_f["rl_u"]."' ";
-            }
-        }
-
-        if($id_rol > 1){
-            $condition_ext = " AND u.id_aplicativo = $id_aplicativo";
+            // if(isset($array_f["rl_u"]) && $array_f["rl_u"] != ""){
+            //     $condition.= " AND u.id_rol = '".$array_f["rl_u"]."' ";
+            // }
         }
 
         $query  = " SELECT u.id_usuario, 
@@ -757,18 +750,49 @@ class cUsers extends BD
                            u.activo, 
                            u.admin, 
                            u.id_area,
-                           r.rol
+                           r.rol,
+                           u.externo
                       FROM ws_usuario as u
-                 LEFT JOIN ws_rol as r on u.id_rol = r.id
+                 LEFT JOIN ws_rol as r on u.id_rol = r.id_rol
                      WHERE 1 
-                           $condProfile 
-                           $condition        
-                           $condition_ext 
+                           $condition       
                     ORDER BY id_usuario DESC ".$milimite;
                     // die($query);
         $result = $this->conn->prepare($query);
         $result->execute();
         return $result;
+    }
+
+
+    public function getRoles( $id_rol ){
+        $array = array();
+        $condition = "";
+
+        if($id_rol > 1){
+            $condition .= " AND id_rol > 1";
+        }
+
+        try{
+            $query = "SELECT id_rol,
+                             rol
+                        FROM ws_rol
+                       WHERE activo = 1
+                       $condition";
+                // die($query);
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_rol] = $row->rol;
+                }
+            }
+
+            return $array;
+
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
     }
 
     public function getRegbyid(){
@@ -841,28 +865,6 @@ class cUsers extends BD
         return $registrosf;
     }
 
-
-
-    public function getArrayModulo(){
-        $arraym = array();
-        try{
-            $query = "SELECT id_modulo, 
-                             observaciones
-                        FROM cat_modulos
-                       WHERE activo = 1";
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            if($result->rowCount () > 0){
-                while($row = $result->fetch(PDO::FETCH_OBJ)){
-                    $arraym[$row->id_modulo] = $row->observaciones;
-                }
-            }
-            return $arraym;
-        }catch(\PDOException $e){
-            return "Error! : ".$e->getMessage();
-        }
-    }
-
     public function updateReg( $data_update ){
         $correcto   = 1;
         $exec       = $this->conn->conexion();
@@ -895,6 +897,7 @@ class cUsers extends BD
         return $correcto;
     }
 
+
     public function insertRegdtluser(){
 
         $exec = $this->conn->conexion();
@@ -924,6 +927,7 @@ class cUsers extends BD
         $exec->commit();
         return $correcto;
     }
+
 
     public function deleteRegUsMenu(){
         $correcto   = 2;
@@ -1096,190 +1100,11 @@ class cUsers extends BD
         return $correcto;
     }
 
-    public function showorigen($id_usr, $id_apl){
-        $condition = "";
-
-        if($id_usr > 1){
-            if($id_apl != ""){
-                $condition .= " AND id_aplicativo = $id_apl";
-            }
-        }
-
-        try{
-            $query = "SELECT id_origen, 
-                             origen, 
-                             abreviatura
-                        FROM cat_origen 
-                       WHERE activo = 1
-                         $condition";
-                // die($query);
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            return $result;
-        }catch(\PDOException $e){
-            return "Error! : ".$e->getMessage();
-        }
-    }
-
-
-    public function insertOrigin( $data_org ){
-        $correcto = 1;
-        $exec = $this->conn->conexion();
-
-        try{
-            $insert = "INSERT INTO tbl_usuario_origen(id_usuario,
-                                                      id_origen)
-                                               VALUES(?,
-                                                      ?)";
-            $result = $this->conn->prepare($insert);
-            $exec->beginTransaction();
-            $result->execute($data_org);
-
-            if($correcto == 1){
-                $correcto = $exec->lastInsertId();
-                $this->setId_usuario_origen($correcto);
-            }
-            $exec->commit();
-            return $correcto;
-        }catch(\PDOException $e){
-            $exec->rollBack();
-            return "Error! : ".$e->getMessage();
-        }
-    }
-
-
-    public function originById(){
-        try{
-            $query = "SELECT id_usuario, 
-                             id_origen
-                        FROM tbl_usuario_origen 
-                       WHERE id_usuario = ".$this->getId_usuario()." ";
-                // die($query);
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            return $result;
-        }catch(\PDOException $e){
-            return "Error! : ".$e->getMessage();
-        }
-    }
 
 
 
-    public function aplicativoById( $user){
-        try{
-            $query = "SELECT id_usuario, 
-                             id_aplicativo
-                        FROM tbl_usuario_aplicativo 
-                       WHERE id_usuario = $user ";
-                // die($query);
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            return $result;
-        }catch(\PDOException $e){
-            return "Error! : ".$e->getMessage();
-        }
-    }
 
-
-    public function deleteOrigin( $id_usr ){
-        $correcto   = 2;
-        try {
-            $delete = "DELETE FROM tbl_usuario_origen 
-                             WHERE id_usuario =  $id_usr";
-            // die($delete);
-            $result = $this->conn->prepare($delete);
-            $result->execute();
-
-            return $correcto;
-        } catch (\PDOException $e) {
-            return "Error!: " . $e->getMessage();
-        } 
-    }
-
-
-    public function deleteAplicativos( $user ){
-        $correcto   = 2;
-        try {
-            $delete = "DELETE FROM tbl_usuario_aplicativo
-                             WHERE id_usuario = " .$user;
-            // die($delete);
-            $result = $this->conn->prepare($delete);
-            $result->execute();
-
-            return $correcto;
-        } catch (\PDOException $e) {
-            return "Error!: " . $e->getMessage();
-        } 
-    }
-
-
-    public function show_aplicativo( $id_usr, $id_apl ){
-        $condition = "";
-
-        if($id_usr > 1){
-            if($id_apl != ""){
-                $condition .= " AND id_aplicativo = $id_apl";
-            }
-        }
-
-        try{
-            $query = "SELECT id_aplicativo,
-                             descripcion
-                        FROM cat_aplicativo 
-                       WHERE activo = 1 
-                       $condition";
-                // die($query);
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            return $result;
-        }catch(\PDOException $e){
-            return "Error!: " . $e->getMessage();
-        }
-    }
-
-
-    public function getRolById( $id_rol ){
-        $txt_rol = "";
-        try{
-            $query = "SELECT rol
-                        FROM ws_rol
-                       WHERE id = $id_rol";
-            
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            if($result->rowCount() > 0){
-                $row = $result->fetch(PDO::FETCH_OBJ);
-                $txt_rol = $row->rol;
-            }
-            return $txt_rol;
-        }catch(\Exception $e){
-            return "Error: ".$e->getMessage();
-        }
-    }
-
-
-    public function getSearchUser( $usr ){
-        $total = "";
-        
-        try{
-            $query = "SELECT COUNT(id_usuario) as total 
-                        FROM ws_usuario
-                       WHERE usuario = '$usr' ";
-                
-            $result = $this->conn->prepare($query);
-            $result->execute();
-            if($result->rowCount() > 0){
-                $row = $result->fetch(PDO::FETCH_OBJ);
-                $total = $row->total;
-            }
-            return $total;
-
-        }catch(\PDOException $e){
-            return "Error: ".$e->getMessage();
-        }
-    }
-
-    
+      
     public function closeOut(){
         $this->conn = null;
     }  

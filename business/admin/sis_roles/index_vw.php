@@ -83,7 +83,7 @@ $ruta_app = "";
         <div class="offcanvas"></div>
         <div id="content">
             <section>
-                <div class="section-body contain-lg">
+                <div class="section-body contain-md">
                     <div class="row">
                         <div class="col-lg-8">
                             <h1 class="text-primary main-title">

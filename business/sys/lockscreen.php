@@ -2,7 +2,6 @@
 session_start();
 $dir_fc       = "../../";
 /*--------------------------------------------------------------------------------------------------------*/
-
 include_once $dir_fc.'connections/trop.php';
 include_once $dir_fc.'connections/php_config.php';
 
@@ -11,7 +10,8 @@ $ruta_app = "";
 
 extract($_REQUEST);
 
-if (!isset($_SESSION[id_usr]) || $_SESSION[id_usr]=="")  {
+if (!isset($_SESSION[id_usr]) || $_SESSION[id_usr] == "")  {
+    
     echo "<script language='javascript'>window.location= '".$raiz."index.php?attempt=login';</script>";
 
 } else{
@@ -45,7 +45,7 @@ if (!isset($_SESSION[id_usr]) || $_SESSION[id_usr]=="")  {
 <html  class="lockscreen">
 <head>
     <title><?php echo $titulo_paginas?></title>
-    <!-- <?php include("dist/inc/headercommon.php"); ?> -->
+    <?php include("dist/inc/headercommon.php"); ?>
 
 </head>
     <body class="menubar-hoverable header-fixed ">
@@ -90,6 +90,7 @@ if (!isset($_SESSION[id_usr]) || $_SESSION[id_usr]=="")  {
             </div>
         </div>
     </section>
+    <?php include($dir_fc."inc/footercommon.php");?>
 </body>
 </html>
 <?php
