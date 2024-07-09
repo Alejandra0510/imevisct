@@ -2,14 +2,15 @@
 /**
  * * Funciones generales
  */
-class cFunction
-{
+class cFunction {
+
     function __construct()
     {
 
     }
     //Orden de la fecha para insertar
-    public function formatear_fecha_ins($fecha){                      // Y/m/d
+    public function formatear_fecha_ins($fecha){       
+                       // Y/m/d
         $explote = explode ('/',$fecha);                       //división de la fecha utilizando el separador /
         $fecha   = $explote [2].'-'.$explote [1].'-'.$explote [0];   //alteramos el orden de la variable
 
@@ -26,6 +27,7 @@ class cFunction
     }
 
     public function obtenerFechaEnLetra($fecha){
+
         $dia  = $this->conocerDiaSemanaFecha($fecha);
         $num  = date("j", strtotime($fecha));
         $anno = date("Y", strtotime($fecha));
@@ -35,6 +37,7 @@ class cFunction
     }
 
     public function conocerDiaSemanaFecha($fecha) {
+
         $dias = array('Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado');
         $dia  = $dias[date('w', strtotime($fecha))];
         return $dia;
@@ -67,7 +70,9 @@ class cFunction
     }
 
     function fn_paginacion($pagina, $numeroTotalPaginas, $raiz, $ruta_paginado, $busqueda){
+
         $paginado = "<div class='col-md-12'>";
+
         if ($pagina > 1 && $numeroTotalPaginas > 1) { // Mostrar si no es la primera pagina
             $paginado.= "<a href='" . $raiz . $ruta_paginado."&pag=1$busqueda'  title='Primera página' class='btn ink-reaction btn-floating-action btn-sm btn-primary' style='float:left;'>
             <i class='fa fa-angle-double-left'></i>
@@ -110,14 +115,43 @@ class cFunction
         return $paginado;
     }
 
+    function resizeAspectW($image, $width, $ruta){
+
+        list($imagen, $tipo)= $this->abrirImagen($image);
+
+        $aspect = imagesx($image) / imagesy($image);
+        $height = $width / $aspect;
+        $new = imagecreatetruecolor($width, $height);
+
+        imagecopyresampled($new, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image));
+
+        $this->guardarImagen($new, $ruta, $tipo);
+        //return $new;
+    }
+
+    function imgResizeAspectW($imager, $width, $ruta){
+
+        list($image, $tipo)= $this->abrirImagen($imager);
+
+        $aspect = imagesx($image) / imagesy($image);
+        $height = $width / $aspect;
+        $new = imagecreatetruecolor($width, $height);
+
+        imagecopyresampled($new, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image));
+
+        $this->guardarImagen($new, $ruta, $tipo);
+        //return $new;
+    }
+
+
     /**
      * Crea un thumbail de un imagen con el ancho y el alto pasados como parametros,
      * recortando en caso de ser necesario la dimension mas grande por ambos lados.
      *
-     * @param type $nombreImagen Nombre completo de la imagen incluida la ruta y la extension.
-     * @param type $nombreThumbnail Nombre completo para el thumbnail incluida la ruta y la extension.
-     * @param type $nuevoAncho Ancho para el thumbnail.
-     * @param type $nuevoAlto Alto para el thumbnail.
+     * @param type string $nombreImagen Nombre completo de la imagen incluida la ruta y la extension.
+     * @param type string $nombreThumbnail Nombre completo para el thumbnail incluida la ruta y la extension.
+     * @param type int $nuevoAncho Ancho para el thumbnail.
+     * @param type int $nuevoAlto Alto para el thumbnail.
      */
     function crearThumbnailRecortado($nombreImagen, $nombreThumbnail, $nuevoAncho, $nuevoAlto){
 
@@ -161,6 +195,68 @@ class cFunction
         // Guarda la imagen.
         $this->guardarImagen($thumbnail, $nombreThumbnail, $tipo);
     }
+
+    /**
+     * Abre la imagen con el nombre pasado como parametro y devuelve un array con la imagen y el tipo de imagen.
+     *
+     * @param type string $nombre Nombre completo de la imagen incluida la ruta y la extension.
+     * @return $resultado Devuelve la imagen abierta.
+     */
+    function abrirImagen($nombre){
+        $info = getimagesize($nombre);
+        switch ($info["mime"]){
+            case "image/jpeg":
+                $imagen = imagecreatefromjpeg($nombre);
+                break;
+            case "image/gif":
+                $imagen = imagecreatefromgif($nombre);
+                break;
+            case "image/png":
+                $imagen = imagecreatefrompng($nombre);
+                break;
+            default :
+                $imagen = "";
+                echo "Error: No es un tipo de imagen permitido.";
+        }
+        $resultado[0]= $imagen;
+        $resultado[1]= $info["mime"];
+        return $resultado;
+    }
+
+
+    /** Función para dejar la trasnparencia en una imagen PNG */
+    function transparenciaImagen( $imagen ){
+
+        imagealphablending($imagen, false);
+        imagesavealpha($imagen, true);
+        return true;
+    }
+
+
+    /**
+     * Guarda la imagen con el nombre pasado como parametro.
+     *
+     * @param type string $imagen La imagen que se quiere guardar
+     * @param type string $nombre Nombre completo de la imagen incluida la ruta y la extension.
+     * @param type string $tipo Formato en el que se guardara la imagen.
+     */
+    function guardarImagen($imagen, $nombre, $tipo){
+
+        switch ($tipo){
+            case "image/jpeg":
+                imagejpeg($imagen, $nombre, 96); // El 100 es la calidade de la imagen (entre 1 y 100. Con 100 sin compresion ni perdida de calidad.).
+                break;
+            case "image/gif":
+                imagegif($imagen, $nombre);
+                break;
+            case "image/png":
+                imagepng($imagen, $nombre, 4); // El 9 es grado de compresion de la imagen (entre 0 y 9. Con 9 maxima compresion pero igual calidad.).
+                break;
+            default :
+                echo "Error: Tipo de imagen no permitido.";
+        }
+    }
+
 
     function custom_alert($type, $main_msg, $message, $cerrar, $icon){
         /**
@@ -213,291 +309,126 @@ class cFunction
         return $alert;
     }
 
-    /**
-     * Abre la imagen con el nombre pasado como parametro y devuelve un array con la imagen y el tipo de imagen.
-     *
-     * @param type $nombre Nombre completo de la imagen incluida la ruta y la extension.
-     * @return Devuelve la imagen abierta.
-     */
-    function abrirImagen($nombre){
-        $info = getimagesize($nombre);
-        switch ($info["mime"]){
-            case "image/jpeg":
-                $imagen = imagecreatefromjpeg($nombre);
-                break;
-            case "image/gif":
-                $imagen = imagecreatefromgif($nombre);
-                break;
-            case "image/png":
-                $imagen = imagecreatefrompng($nombre);
-                break;
-            default :
-                echo "Error: No es un tipo de imagen permitido.";
-        }
-        $resultado[0]= $imagen;
-        $resultado[1]= $info["mime"];
-        return $resultado;
-    }
 
-    /**
-     * Guarda la imagen con el nombre pasado como parametro.
-     *
-     * @param type $imagen La imagen que se quiere guardar
-     * @param type $nombre Nombre completo de la imagen incluida la ruta y la extension.
-     * @param type $tipo Formato en el que se guardara la imagen.
-     */
-    function guardarImagen($imagen, $nombre, $tipo){
-
-        switch ($tipo){
-            case "image/jpeg":
-                imagejpeg($imagen, $nombre, 70); // El 100 es la calidade de la imagen (entre 1 y 100. Con 100 sin compresion ni perdida de calidad.).
-                break;
-            case "image/gif":
-                imagegif($imagen, $nombre);
-                break;
-            case "image/png":
-                imagepng($imagen, $nombre, 6); // El 9 es grado de compresion de la imagen (entre 0 y 9. Con 9 maxima compresion pero igual calidad.).
-                break;
-            default :
-                echo "Error: Tipo de imagen no permitido.";
+    function formatearFecha($fecha){   // formatear fecha y hora
+        if (strpos($fecha,'/') !== false) {
+            $fecha = str_replace('/', '-', $fecha);
+            $fecha = date('Y-m-d H:i:s', strtotime($fecha));
+        } else {
+            $fecha = date('d-m-Y H:i:s', strtotime($fecha));
+            $fecha = str_replace('-', '/', $fecha);
         }
+
+        return $fecha;
     }
 
 
-    function direccion_api($id_direccion, $type, $period){
-        if($id_direccion >=  0){
-            try{
-                $done = 0;
-                $direccion = array();
-                $curl = curl_init();
+    public function formatFechaTiempo($fecha){
+        $explote = explode (' ',$fecha);                       //división de la fecha utilizando el separador /
+        $date = $explote[0];
+        $explote_fecha = explode ('-',$date);   
+        $time = $explote[1];
 
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => apis_dir.'dependencias/direccion.php',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 30,
-                    CURLOPT_SSL_VERIFYHOST => '0',
-                    CURLOPT_SSL_VERIFYPEER => '0',
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
-                                               "type"         => $type,
-                                               "periodo"      => $period )
+        $fecha   = $explote_fecha [2].'-'.$explote_fecha [1].'-'.$explote_fecha [0];
 
-                )); 
+        $num  = date("j", strtotime($fecha));
+        $anno = date("Y", strtotime($fecha));
+        $mes  = array('enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre');
+        $mes  = $mes[(date('m', strtotime($fecha))*1)-1];
 
-                $response = curl_exec($curl);
-                $err      = curl_error($curl);
-                $inf      = curl_getinfo($curl);
+        $hora_formato = strtotime($time);
+        $hora = date("h:i a", $hora_formato);
 
-                curl_close($curl);
-
-                if($err){
-                    $resp = "Error al realizar la consulta:" .$err;
-                }else{
-                    $data = json_decode($response);
-                    if(!is_null($data)){
-                        if($data->done == 1){
-                            if($type == 0){
-                                if(is_array($data->direccion)){
-                                    for ($i=0; $i < count($data->direccion); $i++) { 
-                                        $id_dir = $data->direccion[$i]->id;
-                                        $direcc = $data->direccion[$i]->nombre;
-    
-                                        $direccion[$id_dir] = $direcc;
-                                   }
-                                }
-                            }else{
-                                $direccion = $data->direccion;
-                            }
-                        }
-                    }else{
-                        $resp  = "Dirección no encontrada ".$response;
-                    }
-                }
-
-                return $direccion;
-
-            }catch(\PDOException  $e){
-                $resp = "Error ".$e->getMessage();
-            }
-        }
+        return $num.' de '.$mes.' de '.$anno. ", " .$hora;
     }
-
-    function area_api($id_direccion, $id_area, $type, $period){
-
-        if($id_direccion <> 0 && $id_area <> 0){
-
-            try{
-                $done = 0;
-                $area = "";
-                $curl = curl_init();
-
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => apis_dir.'dependencias/area.php',
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_TIMEOUT => 30,
-                    CURLOPT_SSL_VERIFYHOST => '0',
-                    CURLOPT_SSL_VERIFYPEER => '0',
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
-                                               "id_area"      => $id_area,
-                                               "type"         => $type,
-                                               "periodo"      => $period)
-
-                )); 
-
-                $response = curl_exec($curl);
-                $err      = curl_error($curl);
-                $inf      = curl_getinfo($curl);
-
-                curl_close($curl);
-
-                if($err){
-                    $resp = "Error al realizar la consulta:" .$err;
-                }else{
-                    $data = json_decode($response);
-                    if(!is_null($data)){
-                        if($data->done == 1){
-                            if($data->id_area == $id_area){
-                                $done  = 1;
-                                $area = $data->area;
-                            }else{
-                                $area = '';
-                            }
-                        }
-
-                    }else{
-                        $resp  = "Área no encontrada ".$response;
-                    }
-                }
-
-                return $area;
-
-            }catch(\PDOException  $e){
-                $resp = "Error ".$e->getMessage();
-            }
-        }
-    }
-
-
-
-    //api para directorio
-    function directorio_api_dir ( $id_direccion, $type){
-
-        try{
-
-            $done = 0;
-            $direccion = array();
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => apis_dir.'dependencias/direcciones_op.php',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_SSL_VERIFYHOST => '0',
-                CURLOPT_SSL_VERIFYPEER => '0',
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
-                                           "type"         => $type,
-                                           "periodo"      => 1)
-
-            )); 
-
-
-            $response = curl_exec($curl);
-            $err      = curl_error($curl);
-            $inf      = curl_getinfo($curl);
-
-            curl_close($curl);
-
-            if($err){
-
-                $resp = "Error al realizar la consulta:" .$err;
-
-            }else{
-
-                $data = json_decode($response);
-                if(!is_null($data)){
-                    if($data->done == 1){
-                            $direccion = $data->direccion;
-                    }
-                }else{
-                    $resp  = "Dirección no encontrada ".$response;
-                }
-            }
-
-            return $direccion;
-
-        }catch(\PDOException $e){
-            $resp = "Error ".$e->getMessage();
-        }
-
-    }
-
-
-     //api para directorio
-     function areas_api_op ( $id_direccion, $id_area, $type ){
-
-        try{
-
-            $done = 0;
-            $area = array();
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => apis_dir.'dependencias/areas_op.php',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_SSL_VERIFYHOST => '0',
-                CURLOPT_SSL_VERIFYPEER => '0',
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
-                                           "id_area"      => $id_area,
-                                           "type"         => $type,
-                                           "periodo"      => 1 )
-
-            )); 
-
-
-            $response = curl_exec($curl);
-            $err      = curl_error($curl);
-            $inf      = curl_getinfo($curl);
-
-            curl_close($curl);
-
-            if($err){
-
-                $resp = "Error al realizar la consulta:" .$err;
-
-            }else{
-
-                $data = json_decode($response);
-                if(!is_null($data)){
-                    if($data->done == 1){
-                            $area = $data->area;
-                    }
-                }else{
-                    $resp  = "Área no encontrada ".$response;
-                }
-            }
-
-            return $area;
-
-        }catch(\PDOException $e){
-            $resp = "Error ".$e->getMessage();
-        }
-
-    }
-
-   
 
 
     public function addKeyAndValue(&$array, $key, $value)
     {
         $array[$key] = $value;
+    }
+
+
+    public function getApiDir( $id_direccion, $type, $periodo ){
+
+        $direccion = "";
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => api_rest.'direccion.php',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYHOST => '0',
+            CURLOPT_SSL_VERIFYPEER => '0',
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
+                                       "type"         => $type,
+                                       "periodo"      => $periodo)
+
+        )); 
+
+        $response = curl_exec($curl);
+        $err      = curl_error($curl);
+        $inf      = curl_getinfo($curl);
+        curl_close($curl);
+
+        if($err){
+            $direccion = "Error al realizar la consulta:" .$err;
+        }else{
+            $data = json_decode($response);
+            if(!is_null($data)){
+                if($data->done == 1){
+                    $direccion = $data->direccion;
+                }
+            }else{
+                $direccion  = "Dependencia no encontrada ".$response;
+            }
+        }
+        return $direccion;
+
+    }
+
+
+    public function getApiAreaByDir( $id_direccion, $id_area, $type, $periodo ){
+
+        $area = "";
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => api_rest.'area.php',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYHOST => '0',
+            CURLOPT_SSL_VERIFYPEER => '0',
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>array("id_direccion" => $id_direccion,
+                                       "id_area"      => $id_area,
+                                       "type"         => $type,
+                                       "periodo"      => $periodo)
+
+        )); 
+
+        $response = curl_exec($curl);
+        $err      = curl_error($curl);
+        $inf      = curl_getinfo($curl);
+        curl_close($curl);
+
+        if($err){
+            $area = "Error al realizar la consulta:" .$err;
+        }else{
+            $data = json_decode($response);
+            if(!is_null($data)){
+                if($data->done == 1){
+                    $area = $data->area;
+                }
+            }else{
+                $area  = "Área no encontrada ".$response;
+            }
+        }
+        return $area;
+
     }
 
 }

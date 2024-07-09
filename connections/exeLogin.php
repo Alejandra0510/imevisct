@@ -75,6 +75,8 @@ try{
 
         $cUsers->setId_usuario($_SESSION[id_usr]);
 
+		$_SESSION[array_data_dr] = $cFn->getApiDir(0, 0, 1);
+
         if($carpeta_go == ""){
             
             $resp = "?controller=business&action=show";

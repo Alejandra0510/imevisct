@@ -33,3 +33,7 @@ define('_is_view_',    's_is_v_tram_cer'.$proyId );
 define('_id_estatus_', 'id_estatus_cer'.$proyId );
 
 define('array_filtros', 'array_filtros_busqueda'.$proyId);
+define('api_rest',      '192.1.1.37/adminsti/rest/dependencias/');
+define('array_data_dr', 'array_data_direcciones');
+
+

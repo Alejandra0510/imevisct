@@ -62,6 +62,7 @@ const apiAddress = (id_d, type, period, select, focusItem) => {
 
 
 const apiArea = (id_dir, id_area ,type, period, select) => {
+    
     const data = new FormData();
     const selectArea = sel(select);
     let option;
@@ -71,8 +72,8 @@ const apiArea = (id_dir, id_area ,type, period, select) => {
     data.append('type', type);
     data.append('periodo', period);
 
-    // const url = 'http://192.1.1.37/adminSTI/rest/dependencias/area.php';
-    const url = 'business/ajax/getDataAreasApi.php';
+    const url = 'http://192.1.1.37/adminSTI/rest/dependencias/area.php';
+    // const url = 'business/ajax/getDataAreasApi.php';
     
 
     fetch(url, {

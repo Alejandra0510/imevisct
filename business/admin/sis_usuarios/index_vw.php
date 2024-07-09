@@ -59,17 +59,19 @@ $cLista->setInicio($inicio);
 $cLista->setFin($registros);
 $cLista->setLimite(0);
 
-$rs_count       = $cLista->getAllReg();  
+$rs_count       = $cLista->getAllReg( $_SESSION[id_rol] );  
 $countRegistros = $rs_count->rowCount();
 $numeroTotalPaginas = ceil($countRegistros/$registros);
 
 $cLista->setLimite(1);
-$rsRegShow = $cLista->getAllReg();  
+$rsRegShow = $cLista->getAllReg( $_SESSION[id_rol] );  
 
 $ruta_app    = "";
 $dependencia = "";
 
 $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
+
+$array_permisos_roles = array("1", "2");
 
 ?>
 <!DOCTYPE html>
@@ -86,7 +88,7 @@ $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
         <div class="offcanvas"></div>
         <div id="content">
             <section>
-                <div class="section-body contain-md">
+                <div class="section-body contain-lg">
                     <div class="row">
                         <div class="col-lg-8">
                             <h1 class="text-primary main-title">
@@ -203,7 +205,7 @@ $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
                                                             <i class="fa fa-eye"> </i>
                                                         </a>
                                                         <?php
-                                                        if($_SESSION[admin] == 1){
+                                                        if($_SESSION[admin] == 1 || in_array($_SESSION[id_rol], $array_permisos_roles)){
                                                             if($activo == 1){
                                                                 if($_SESSION[edit] == 1) {
                                                                     ?>
@@ -217,7 +219,7 @@ $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
                                                                     </a>
                                                                 <?php
                                                                 }
-                                                                if (($_SESSION[admin]) || $_SESSION[id_rol] <= 2) { 
+                                                                if ($_SESSION[id_rol] <= 2) { 
                                                                 ?>
                                                                     <a 
                                                                         onclick="cpwModal(<?php echo $id_usuario?>)"
@@ -239,15 +241,18 @@ $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
                                                                     title="<?php echo $titleAB?>">
                                                                     <span class="<?php echo $icoAB?>"></span>
                                                                 </a>
-                                                        
-                                                                <a  onclick="handleDeleteReg(<?php echo $id_usuario?>, 3)" 
-                                                                    data-toggle="tooltip"
-                                                                    class="btn ink-reaction btn-icon-toggle" 
-                                                                    data-placement="top" 
-                                                                    title="Eliminar">
-                                                                    <span class="fa fa-trash"></span>
-                                                                </a>
-                                                                <?php
+                                                                <?php 
+                                                                if($_SESSION[admin] == 1){
+                                                                    ?>
+                                                                    <a  onclick="handleDeleteReg(<?php echo $id_usuario?>, 3)" 
+                                                                        data-toggle="tooltip"
+                                                                        class="btn ink-reaction btn-icon-toggle" 
+                                                                        data-placement="top" 
+                                                                        title="Eliminar">
+                                                                        <span class="fa fa-trash"></span>
+                                                                    </a>
+                                                                    <?php
+                                                                }
                                                             }                                                        
                                                         }
                                                         ?>
@@ -357,5 +362,136 @@ $get_roles = $cLista->getRoles( $_SESSION[id_rol] );
         </div>
     </div>
     <!-- End Modal Search -->
+    <!-- Modal Cambiar contraseña-->
+    <div class="modal small fade" id="idModalPassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content modal-md">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3 class="modal-title">
+                        Cambiar contraseña
+                    </h3>
+                </div>
+                <form role="form" class="form" id="frmPassword">
+                    <div class="modal-body">
+                        <input type="hidden" name="id_usr_m" id="id_usr_m">   
+                        <article id="container-info">                        
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-content">
+                                                <input type="password" 
+                                                    class="form-control" 
+                                                    id="clave" 
+                                                    name="clave"  
+                                                    required />
+                                                <label for="clave">
+                                                    Contraseña Actual
+                                                </label>
+                                            </div>
+                                            <div class="input-group-btn">
+                                                <button type="button"
+                                                        class="btn btn-default ink-reaction"
+                                                        onclick="view_password(1)">
+                                                    <i class="fa fa-eye-slash" id="p"></i>    
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group" id="div_p1">
+                                        <div class="input-group">
+                                            <div class="input-group-content">
+                                                <input type="password" 
+                                                    class="form-control" 
+                                                    id="nuevaclave" 
+                                                    name="nuevaclave" 
+                                                    minlength="8"
+                                                    maxlength="16"
+                                                    aria-describedby="password_error" 
+                                                    onblur="validate_pass(2)"
+                                                    required />
+                                                <span id="pass_validate_error" class="help-block"></span>
+                                                <label for="nuevaclave">
+                                                    Contraseña Nueva
+                                                </label>
+                                            </div>
+                                            <div class="input-group-btn">
+                                                <button type="button"
+                                                        class="btn btn-default ink-reaction"
+                                                        onclick="view_password(2)">
+                                                    <i class="fa fa-eye-slash" id="p1"></i>    
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group" id="div_p2">
+                                        <div class="input-group">
+                                            <div class="input-group-content">
+                                                <input type="password" 
+                                                    class="form-control" 
+                                                    id="confclave" 
+                                                    name="confclave" 
+                                                    minlength="8"
+                                                    maxlength="16"
+                                                    aria-describedby="password_error" 
+                                                    onblur="validate_pass(3)"
+                                                    required />
+                                                <span id="pass_validate_error_2" class="help-block"></span>
+                                                <label for="confclave">
+                                                    Confirmar Contraseña
+                                                </label>
+                                            </div>
+                                            <div class="input-group-btn">
+                                                <button type="button"
+                                                        class="btn btn-default ink-reaction"
+                                                        onclick="view_password(3)">
+                                                    <i class="fa fa-eye-slash" id="p2"></i>    
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="checkbox checkbox-styled checkbox-accent-bright">
+                                            <label>
+                                                <input type="checkbox" 
+                                                    name="pass_random" 
+                                                    id="pass_random" />
+                                                <span>
+                                                    Generar contraseñas automáticamente
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" 
+                                class="btn ink-reaction btn-danger" 
+                                data-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" 
+                                id="btnHandleSubmitChange" 
+                                class="btn ink-reaction btn-success" >
+                            Cambiar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Cambiar Contraseña -->
+
 </body>
 </html>

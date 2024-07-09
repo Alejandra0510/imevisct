@@ -25,10 +25,6 @@ class cUsers extends BD
     private $admin;
     private $nuevo;
     private $exportar;
-    private $id_origen;
-    private $id_usuario_origen;
-    private $id_aplicativo;
-    private $id_modulo;
     private $arraySearch;
 
     private $id_menu;
@@ -547,49 +543,6 @@ class cUsers extends BD
 
         return $this;
     }
-
-        /**
-     * Get the value of id_origen
-     */ 
-    public function getId_origen()
-    {
-        return $this->id_origen;
-    }
-
-
-    /**
-     * Set the value of id_origen
-     *
-     * @return  self
-     */ 
-    public function setId_origen($id_origen)
-    {
-        $this->id_origen = $id_origen;
-
-        return $this;
-    }
-
-    
-    /**
-     * Get the value of id_usuario_origen
-     */ 
-    public function getId_usuario_origen()
-    {
-        return $this->id_usuario_origen;
-    }
-
-    /**
-     * Set the value of id_usuario_origen
-     *
-     * @return  self
-     */ 
-    public function setId_usuario_origen($id_usuario_origen)
-    {
-        $this->id_usuario_origen = $id_usuario_origen;
-
-        return $this;
-    }
-
     
     /**
      * Get the value of id_area
@@ -611,48 +564,6 @@ class cUsers extends BD
         return $this;
     }
 
-
-        /**
-     * Get the value of id_aplicativo
-     */ 
-    public function getId_aplicativo()
-    {
-        return $this->id_aplicativo;
-    }
-
-    /**
-     * Set the value of id_aplicativo
-     *
-     * @return  self
-     */ 
-    public function setId_aplicativo($id_aplicativo)
-    {
-        $this->id_aplicativo = $id_aplicativo;
-
-        return $this;
-    }
-
-
-       /**
-     * Get the value of id_modulo
-     */ 
-    public function getId_modulo()
-    {
-        return $this->id_modulo;
-    }
-
-    /**
-     * Set the value of id_modulo
-     *
-     * @return  self
-     */ 
-    public function setId_modulo($id_modulo)
-    {
-        $this->id_modulo = $id_modulo;
-
-        return $this;
-    }
-    
     /**
      * Get the value of arraySearch
      */ 
@@ -707,10 +618,11 @@ class cUsers extends BD
     }
 
     
-    public function getAllReg(){
+    public function getAllReg( $rol ){
         //Inicio fin son para paginado
-        $milimite      = "";
-        $condition     = "";
+        $milimite    = "";
+        $condition   = "";
+        $cdt_master  = "";
 
         if ($this->getLimite() == 1){ $milimite = "LIMIT ".$this->getInicio().", ".$this->getFin();}
         $filtro = $this->getFiltro();
@@ -719,27 +631,21 @@ class cUsers extends BD
 
             $array_f = $this->getArraySearch();
 
-            // if(isset($array_f["id_u"]) && $array_f["id_u"] != ""){
-            //     $condition .= " AND id_usuario = ".$array_f["id_u"]." ";
-            // }
+            if(isset($array_f["idrs"]) && $array_f["idrs"] != ""){
+                $condition .= " AND u.id_rol = ".$array_f["idrs"]." ";
+            }
 
-            // if (isset($array_f["dc_u"]) && $array_f["dc_u"] != "") {
-            //     $condition .= " AND id_direccion = " . $array_f["dc_u"] . " ";
-            // }
+            if (isset($array_f["nams"]) && $array_f["nams"] != "") {
+                $condition .= " AND CONCAT_WS(' ', u.nombre, u.apepa, u.apema) LIKE '%" . $array_f["nams"] . "%' ";
+            }
 
-            // if (isset($array_f["us_u"]) && $array_f["us_u"] != "") {
-            //     $condition .= " AND usuario LIKE '%" . $array_f["us_u"] . "%' ";
-            // }
+            if (isset($array_f["usrs"]) && $array_f["usrs"] != "") {
+                $condition .= " AND u.usuario LIKE '%" . $array_f["usrs"] . "%' ";
+            }
+        }
 
-            // if (isset($array_f["no_u"]) && $array_f["no_u"] != "") {
-            //     $condition .= " AND (CONCAT_WS(' ', u.nombre, u.apepa, u.apema) 
-            //                     LIKE '%".$array_f["no_u"]."%'
-            //                      OR u.usuario LIKE '%".$array_f["no_u"]."%' )";
-            // }
-            
-            // if(isset($array_f["rl_u"]) && $array_f["rl_u"] != ""){
-            //     $condition.= " AND u.id_rol = '".$array_f["rl_u"]."' ";
-            // }
+        if($rol > 1){
+            $cdt_master = " AND id_usuario > 1 ";
         }
 
         $query  = " SELECT u.id_usuario, 
@@ -754,8 +660,9 @@ class cUsers extends BD
                            u.externo
                       FROM ws_usuario as u
                  LEFT JOIN ws_rol as r on u.id_rol = r.id_rol
-                     WHERE 1 
-                           $condition       
+                     WHERE 1 = 1
+                        $condition   
+                        $cdt_master    
                     ORDER BY id_usuario DESC ".$milimite;
                     // die($query);
         $result = $this->conn->prepare($query);
@@ -824,25 +731,6 @@ class cUsers extends BD
 
     }
 
-    public function checarMenuUser(){
-        
-        $query = " SELECT id_usuario_menu, 
-                          imp, 
-                          edit, 
-                          elim, 
-                          nuevo, 
-                          exportar
-                      FROM ws_usuario_menu 
-                    WHERE id_menu = " . $this->getId_menu() . "
-                      AND id_usuario = " . $this->getId_usuario();
-            // echo $query;
-
-        $result = $this->conn->prepare($query);
-        $result->execute();
-
-        return $result;
-    }
-
     public function foundUserConcidencia(){
         //Busca si existe un usuario con el nombre
         $query = " SELECT usuario 
@@ -865,145 +753,14 @@ class cUsers extends BD
         return $registrosf;
     }
 
-    public function updateReg( $data_update ){
-        $correcto   = 1;
-        $exec       = $this->conn->conexion();
-        $sexo       = $this->getSexo();
-
-        $update = " UPDATE ws_usuario
-                       SET id_rol              = ?,
-                           id_direccion        = ?,
-                           id_area             = ?,
-                           id_usuario_modifica = ?,
-                           id_aplicativo       = ?,
-                           usuario             = ?,
-                           sexo                = ?,
-                           nombre              = ?,
-                           apepa               = ?,
-                           apema               = ?,
-                           correo              = ?,
-                           fecha_modifica      = NOW(),
-                           imp                 = ?,
-                           edit                = ?,
-                           elim                = ?,
-                           nuev                = ?,
-                           admin               = ?,
-                           img                 = ?
-                     WHERE id_usuario          = ?";
-        $result = $this->conn->prepare($update);
-        $exec->beginTransaction();
-        $result->execute( $data_update );
-        $exec->commit();
-        return $correcto;
-    }
-
-
-    public function insertRegdtluser(){
-
-        $exec = $this->conn->conexion();
-        $correcto   = 1;
-
-        $insert_dtl = " INSERT INTO ws_usuario_menu(id_usuario, 
-                                                    id_menu, 
-                                                    imp,
-                                                    edit,
-                                                    elim,
-                                                    nuevo,
-                                                    exportar) 
-                                            VALUES ( " . $this->getId_usuario() . ",
-                                                     " . $this->getId_menu() . ",
-                                                     " . $this->getImprimir() . ",
-                                                     " . $this->getEditar() . ",
-                                                     " . $this->getEliminar() . ",
-                                                     " . $this->getNuevo() . ",
-                                                     " . $this->getExportar() . ")";
-                                        // echo $insert_dtl;
-        $result = $this->conn->prepare($insert_dtl);
-        $exec->beginTransaction();
-        $result->execute();
-        if ($correcto == 1) {
-            $correcto = $exec->lastInsertId();
-        }
-        $exec->commit();
-        return $correcto;
-    }
-
-
-    public function deleteRegUsMenu(){
-        $correcto   = 2;
-        $delete     = "DELETE FROM ws_usuario_menu 
-                             WHERE id_usuario = ".$this->getId_usuario()." ";
-                            //  die($delete);
-
-        $result = $this->conn->prepare($delete);
-        $result->execute();
-        return $correcto;
-    }
-
-    public function insertReg( $data ){
-
-        $correcto= 1;    
-        $exec = $this->conn->conexion();
-
-        $insert = " INSERT INTO ws_usuario(id_rol, 
-                                           id_direccion, 
-                                           id_area, 
-                                           id_usuario_captura,
-                                           id_aplicativo,
-                                           usuario, 
-                                           clave,  
-                                           nombre, 
-                                           apepa, 
-                                           apema, 
-                                           correo, 
-                                           sexo, 
-                                           imp, 
-                                           edit, 
-                                           elim, 
-                                           nuev, 
-                                           fec_ingreso, 
-                                           img, 
-                                           admin,  
-                                           activo)
-                                   VALUES (?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           ?,
-                                           NOW(),
-                                           ?,
-                                           ?,
-                                           ?)";
-                                        // die($insert);
-        $result = $this->conn->prepare($insert);
-        $exec->beginTransaction();
-        $result->execute($data);
-
-        if ($correcto == 1) {
-            $correcto = $exec->lastInsertId();
-        }
-        $exec->commit();
-        return $correcto;
-
-    }
-
 
     public function updateStatus($tipo){
         $correcto   = 1;        
+        
         $update = " UPDATE ws_usuario 
                        SET activo     = $tipo
                      WHERE id_usuario = ".$this->getId_usuario();
+
         $result = $this->conn->prepare($update);
         $result->execute();
         $result = null;
@@ -1016,7 +773,8 @@ class cUsers extends BD
         $correcto   = 2;
         
         $delete = "DELETE FROM ws_usuario 
-                         WHERE id_usuario = ".$this->getId_usuario();        
+                         WHERE id_usuario = ".$this->getId_usuario();   
+
         $result = $this->conn->prepare($delete);
         $result->execute();
         $result = null;
@@ -1101,10 +859,225 @@ class cUsers extends BD
     }
 
 
+    public function parentsMenu(){
+     
+        try{
+            $query =" SELECT id, 
+                             id_grupo,
+                             texto, 
+                             link  
+                        FROM ws_menu 
+                       WHERE id_grupo = 0 
+                         AND activo = 1 
+                    ORDER BY id ASC";
+                    // echo $query;
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            return $result;
+        }catch(\Exception $e){
+            return "Error: ".$e->getMessage();
+        }      
+    }
 
 
+    public function childsMenu($id_menu){
 
-      
+        try{
+            $query = "  SELECT id, 
+                               id_grupo, 
+                               texto, 
+                               link  
+                          FROM ws_menu
+                         WHERE id_grupo = $id_menu 
+                           AND activo = 1
+                      ORDER BY id ASC";
+                    // echo $query;
+            $result = $this->conn->prepare($query);
+            $result->execute();
+        return $result;
+
+        }catch(\Exception $e){
+            return "Error: ".$e->getMessage();
+        }      
+    }
+
+
+    public function checarRol_menu( $id_menu ){
+        try{
+            $query ="   SELECT id_rol_menu, 
+                               imp, 
+                               edit, 
+                               new, 
+                               elim, 
+                               export 
+                          FROM ws_rol_menu 
+                         WHERE id_menu = $id_menu
+                           AND id_rol = ".$this->getId_rol()." ";
+                        //    echo $query;
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            return $result;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+        
+    }
+
+
+    public function checkDuplicateUsr( $user ){
+        $total = 0;
+        try{
+            $query = "SELECT COUNT(id_usuario) as usuario
+                        FROM ws_usuario
+                       WHERE activo = 1
+                         AND usuario = '$user' ";
+                    // die($query);
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                $row = $result->fetch(PDO::FETCH_OBJ);
+                $total = $row->usuario;
+            }
+
+            return $total;
+
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
+    public function insertReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $insert = "INSERT INTO ws_usuario(id_direccion,
+                                          id_area,
+                                          id_rol,
+                                          id_genero,
+                                          id_usr_captura,
+                                          fecha_ingreso,
+                                          nombre,
+                                          apepa,
+                                          apema,
+                                          usuario,
+                                          clave,
+                                          correo,
+                                          img,
+                                          externo,
+                                          imp,
+                                          edit,
+                                          new,
+                                          elim,
+                                          admin)
+                                   VALUES(?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          NOW(),
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?,
+                                          ?)";
+
+        $result = $this->conn->prepare($insert);
+        $exec->beginTransaction();
+        $result->execute( $data );
+
+        if($correcto == 1){
+            $correcto = $exec->lastInsertId();
+        }
+
+        $exec->commit();
+        return $correcto;
+    }
+
+
+    public function insertRegDtl( $data_dtl ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $insert = "INSERT INTO ws_usuario_menu(id_usuario,
+                                               id_menu,
+                                               imp,
+                                               edit,
+                                               elim,
+                                               new,
+                                               export)
+                                        VALUES(?,
+                                               ?,
+                                               ?,
+                                               ?,
+                                               ?,
+                                               ?,
+                                               ?)";
+
+        $result = $this->conn->prepare($insert);
+        $exec->beginTransaction();
+        $result->execute( $data_dtl );
+
+        if($correcto == 1){
+            $correcto = $exec->lastInsertId();
+        }
+
+        $exec->commit();
+        return $correcto;
+    }
+
+
+    public function updateReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $update = " UPDATE ws_usuario
+                       SET id_direccion    = ?,
+                           id_area         = ?,
+                           id_rol          = ?,
+                           id_genero       = ?,
+                           id_usr_modifica = ?,
+                           fecha_modifica  = NOW(),
+                           nombre          = ?,
+                           apepa           = ?,
+                           apema           = ?,
+                           correo          = ?,
+                           admin           = ?,
+                           img             = ?,
+                           externo         = ?
+                     WHERE id_usuario      = ?";
+
+        $result = $this->conn->prepare($update);
+        $exec->beginTransaction();
+        $result->execute( $data );
+        $exec->commit();
+        return $correcto;
+    }
+
+
+    public function deleteDtl( $id_user ){
+        $correcto = 2;
+
+        $delete = "DELETE FROM ws_usuario_menu 
+                         WHERE id_usuario = $id_user";   
+
+        $result = $this->conn->prepare($delete);
+        $result->execute();
+        $result = null;
+        $this->conn = null;
+        return $correcto;
+    }
+
+
     public function closeOut(){
         $this->conn = null;
     }  
