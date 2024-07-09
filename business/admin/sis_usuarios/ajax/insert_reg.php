@@ -36,11 +36,6 @@ $externo    = "";
 $id_usr_cap = "";
 $img        = "";
 $user_admin = "";
-$imp        = 0;
-$nue        = 0;
-$edt        = 0;
-$exp        = 0;
-$elm        = 0;
 
 extract($_REQUEST);
 
@@ -68,7 +63,9 @@ try{
 
     $id_usr_cap = $_SESSION[id_usr];
 
-    $externo = ( $id_direccion == "" || $id_direccion == NULL ) ? 1 : NULL;
+    $externo   = ( $id_direccion == "" || $id_direccion == NULL ) ? 1 : NULL;
+    $direccion = ($id_direccion == "") ? NULL : $id_direccion;
+    $area      = ($id_area == "") ? NULL : $id_area;
 
     if(isset($_SESSION[admin]) && $_SESSION[admin] == 1){
         $user_admin = $id_t_usr;
@@ -79,8 +76,8 @@ try{
     $img = ( $genero == 1) ? 'avatar_1.png' : 'avatar_2.png';
 
     $data = array(
-        $id_direccion,
-        $id_area,
+        $direccion,
+        $area,
         $id_rol_usr,
         $genero,
         $id_usr_cap,
@@ -110,6 +107,13 @@ try{
     if(isset($menus)){
 
         foreach ($menus as $key => $value) {
+            
+            $imp        = 0;
+            $nue        = 0;
+            $edt        = 0;
+            $exp        = 0;
+            $elm        = 0;
+
             if(isset($grupo)){
                 $gpo = $grupo[$value];
                 if($gpo <> 0){

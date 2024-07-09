@@ -13,7 +13,8 @@ $icon = "error";
 $resp = "";
 $resp_child = "";
 
-$perfil = "";
+$perfil  = "";
+$usuario = "";
 
 
 extract($_REQUEST);
@@ -78,7 +79,12 @@ try{
                         $chk_xport   = "";
                         $chk_2       = "";
     
-                        $checked_r_2 = $cData->checarRol_menu( $rw_childs->id );
+                        if($usuario != ""){
+                            $checked_r_2 = $cData->checarUserMenu( $rw_childs->id, $usuario );
+                        } else{
+                            $checked_r_2 = $cData->checarRol_menu( $rw_childs->id );
+                        }
+
                         if ($checked_r_2->rowCount() > 0) {
                             $rw_check  = $checked_r_2->fetch(PDO::FETCH_OBJ);
                             $chk_2     = "checked";

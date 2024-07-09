@@ -924,6 +924,33 @@ class cUsers extends BD
     }
 
 
+    public function checarUserMenu( $id_menu, $id_usr = null ){
+
+        $condition = "";
+        if($id_usr != ""){
+            $condition .= " AND id_usuario = $id_usr ";
+        }
+
+        try{
+            $query ="   SELECT id_usuario_menu, 
+                               imp, 
+                               edit, 
+                               new, 
+                               elim, 
+                               export 
+                          FROM ws_usuario_menu 
+                         WHERE id_menu    = $id_menu
+                           $condition ";
+                        //    echo $query;
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            return $result;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
     public function checkDuplicateUsr( $user ){
         $total = 0;
         try{
@@ -1072,8 +1099,6 @@ class cUsers extends BD
 
         $result = $this->conn->prepare($delete);
         $result->execute();
-        $result = null;
-        $this->conn = null;
         return $correcto;
     }
 

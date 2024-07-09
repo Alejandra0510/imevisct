@@ -130,12 +130,11 @@ const getMenusByUsr = ( usr_val ) => {
 
     if(rolv != null && rolv != ""){
         
-        fetch(`business/admin/sis_usuarios/ajax/get_menus.php?perfil=${ rolv }`)
+        fetch(`business/admin/sis_usuarios/ajax/get_menus.php?perfil=${ rolv }&usuario=${ usr_val }`)
         .then((result) => result.text())
         .then(function( resp ){   
             sel('#permisos_ajax').innerHTML = resp;
-            $('.ocultar').hide();
-            $('.child-menu').hide();
+            $('.mostrar').hide();
         })
         .catch(function(error){
             sel('#permisos_ajax').innerHTML = error;
@@ -266,7 +265,26 @@ const handleSubmitEdit = ( frm_e ) => {
     })
     .then((resul) => resul.json())
     .then(function({ done, resp, icon }){
-
+        if(done){
+            Swal.fire({
+                title: '¡Listo!',
+                text: resp,
+                icon: icon,
+                allowOutsideClick: false
+            })
+            .then((result) => {
+                let ruta = sel("#current_file").value;
+                window.location.assign(`${ruta}index`);
+            });
+        } else {
+            Swal.fire({
+                icon: icon,
+                title: ':(...',
+                text: resp,
+                allowOutsideClick: false
+            });
+            habilitaboton('btn_guardar_e');
+        }
     })
     .catch(function(error){
         Swal.fire({

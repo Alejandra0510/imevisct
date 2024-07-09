@@ -10,9 +10,10 @@ include_once $dir_fc."data/users.class.php";
 $cData = new cUsers();
 $cFn   = new cFunction();
 
-$done = false;
-$icon = "error";
-$resp = "";
+$done     = false;
+$icon     = "error";
+$resp     = "";
+$resp_dtl = "";
 
 $id_usuario       = "";
 $nombre           = "";       
@@ -37,18 +38,13 @@ $externo    = "";
 $id_usr_cap = "";
 $img        = "";
 $user_admin = "";
-$imp        = 0;
-$nue        = 0;
-$edt        = 0;
-$exp        = 0;
-$elm        = 0;
 
 extract($_REQUEST);
 
 try{
 
-    if(!isset($nombre)      || !isset($ape_pa)          || !isset($ape_ma) || !isset($user_n) || !isset($password) || !isset($genero)      || !isset($id_rol_usr)      || 
-        $nombre == ""       || $ape_pa == ""            || $ape_ma == ""   || $user_n == ""   || $password == ""   || !is_numeric($genero) || !is_numeric($id_rol_usr) ||
+    if(!isset($nombre)      || !isset($ape_pa)          || !isset($ape_ma) || !isset($user_n) || !isset($genero)      || !isset($id_rol_usr)      || 
+        $nombre == ""       || $ape_pa == ""            || $ape_ma == ""   || $user_n == ""   || !is_numeric($genero) || !is_numeric($id_rol_usr) ||
         !isset($id_usuario) || !is_numeric($id_usuario) || $id_usuario == ""){
         throw new Exception("No se recibieron los parámetros adecuadamente");
     }
@@ -67,6 +63,9 @@ try{
 
     $externo = ( $id_direccion == "" || $id_direccion == NULL ) ? 1 : NULL;
 
+    $direccion = ($id_direccion == "") ? NULL : $id_direccion;
+    $area      = ($id_area == "") ? NULL : $id_area;
+
     if(isset($_SESSION[admin]) && $_SESSION[admin] == 1){
         $user_admin = $id_t_usr;
     }else{
@@ -76,8 +75,8 @@ try{
     $img = ( $genero == 1) ? 'avatar_1.png' : 'avatar_2.png';
 
     $data = array(
-        $id_direccion,
-        $id_area,
+        $direccion,
+        $area,
         $id_rol_usr,
         $genero,
         $id_usr_cap,
@@ -100,23 +99,35 @@ try{
     $delete = $cData->deleteDtl( $id_usuario );
     
     if(isset($menus)){
-
+ 
         foreach ($menus as $key => $value) {
+
+            $imp        = 0;
+            $nue        = 0;
+            $edt        = 0;
+            $exp        = 0;
+            $elm        = 0;
+
             if(isset($grupo)){
+
                 $gpo = $grupo[$value];
-                if($gpo <> 0){
+                if($gpo != 0){
                     if(isset($permiso_imp[$value])){
                         $imp = $permiso_imp[$value];
                     }
+
                     if(isset($permiso_nuevo[$value])){
                         $nue = $permiso_nuevo[$value];
                     }
+
                     if(isset($permiso_edit[$value])){
                         $edt = $permiso_edit[$value];
                     }
+
                     if(isset($permiso_exportar[$value])){
                         $exp = $permiso_exportar[$value];
                     }
+
                     if(isset($permiso_elim[$value])){
                         $elm = $permiso_elim[$value];
                     }   
@@ -138,7 +149,7 @@ try{
                     $resp_dtl = ", error al agregar los permisos";
                 }else{
                     $icon     = "success";
-                    $resp_dtl = "permisos agregados correctamente";
+                    $resp_dtl = "permisos agregados";
                 }
             }
         }

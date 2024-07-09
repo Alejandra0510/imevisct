@@ -238,7 +238,7 @@ $ruta_app = "";
                                         </table>
                                     </div>
                                 </div>
-                        </div>
+                            </div>
                         <div class="row">
                             <?php
                             echo $cFn->fn_paginacion($pag, $numeroTotalPaginas, $raiz, $param."index", $fPaginacion);
