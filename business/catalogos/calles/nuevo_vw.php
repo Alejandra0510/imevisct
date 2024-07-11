@@ -97,6 +97,46 @@ $get_vialidades  = $cNuevo->getVialidades();
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
+                                                                <select name="id_col" 
+                                                                        id="id_col"
+                                                                        class="form-control"
+                                                                        required>
+                                                                    <option value=""></option>
+                                                                    <?php 
+                                                                    foreach ($get_comunidades as $id_col => $col) {
+                                                                        ?>
+                                                                        <option value="<?php echo $id_col?>"> <?php echo $col?></option>
+                                                                        <?php
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <label for="id_col">
+                                                                    Comunidad <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <select name="vialidad" 
+                                                                        id="vialidad"
+                                                                        class="form-control"
+                                                                        required>
+                                                                    <option value=""></option>
+                                                                    <?php 
+                                                                        foreach ($get_vialidades as $key => $value) {
+                                                                            ?>
+                                                                            <option value="<?php echo $key?>"> <?php echo $value?> </option>
+                                                                            <?php
+                                                                        }
+                                                                    ?>
+                                                                </select>
+                                                                <label for="vialidad">
+                                                                    Vialidad <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
                                                                 <input type="text" 
                                                                        name="name_calle"
                                                                        id="name_calle" 
@@ -108,35 +148,7 @@ $get_vialidades  = $cNuevo->getVialidades();
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <select name="id_col" 
-                                                                        id="id_col"
-                                                                        class="form-control"
-                                                                        required>
-                                                                    <option value="">Seleccione una opción</option>
-                                                                </select>
-                                                                <label for="id_col">
-                                                                    Comunidad <span class="text-danger">*</span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <select name="id_vialidad" 
-                                                                        id="id_vialidad"
-                                                                        class="form-control"
-                                                                        required>
-                                                                    <option value="">Seleccione una opción</option>
-                                                                </select>
-                                                                <label for="id_vialidad">
-                                                                    Vialidad <span class="text-danger">*</span>
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    </div>                                                        
                                                 </fieldset>
                                                 <fieldset>
                                                     <div class="row">
@@ -167,5 +179,6 @@ $get_vialidades  = $cNuevo->getVialidades();
     </div>
     <?php include("dist/components/calles.magnament.php");?>
     <script src="dist/assets/js/select2.full.min.js"></script>
+
 </body>
 </html>

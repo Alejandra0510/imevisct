@@ -99,6 +99,29 @@ class cCalles extends BD
     }
 
 
+    private $arraySearch;
+
+    /**
+     * Get the value of arraySearch
+     */ 
+    public function getArraySearch()
+    {
+        return $this->arraySearch;
+    }
+
+    /**
+     * Set the value of arraySearch
+     *
+     * @return  self
+     */ 
+    public function setArraySearch($arraySearch)
+    {
+        $this->arraySearch = $arraySearch;
+
+        return $this;
+    }
+
+
     public function getAllReg(){
         $milimite = "";
         $condition = "";
@@ -108,15 +131,15 @@ class cCalles extends BD
         }
 
         if ($this->getFiltro() != "") {
-        //    $array_f = $this->getArraySearch();
+           $array_f = $this->getArraySearch();
 
-        //     if(isset($array_f["rolb"]) && $array_f["rolb"] != ""){
-        //         $condition .= " AND rol LIKE '%".$array_f["rolb"]."%' ";
-        //     }
+            if(isset($array_f["str_b"]) && $array_f["str_b"] != ""){
+                $condition .= " AND c.calle LIKE '%".$array_f["str_b"]."%' ";
+            }
 
-        //     if(isset($array_f["desb"]) && $array_f["desb"] != ""){
-        //         $condition .= " AND descripcion LIKE '%".$array_f["desb"]."%' ";
-            // }
+            if(isset($array_f["col_b"]) && $array_f["col_b"] != ""){
+                $condition .= " AND c.id_comunidad = ".$array_f["col_b"]." ";
+            }
         }
 
         $query = " SELECT c.id_calle,
@@ -146,7 +169,8 @@ class cCalles extends BD
             $query = "SELECT id_comunidad,
                              colonia
                         FROM cat_comunidad
-                       WHERE activo = 1 ";
+                       WHERE activo = 1 
+                    ORDER BY colonia ASC";
 
             $result = $this->conn->prepare($query);
             $result->execute();
@@ -165,9 +189,62 @@ class cCalles extends BD
 
         try{
 
-            $query = "SELECT 
-                        FROM 
+            $query = "SELECT id_tipo_vialidad,
+                             descripcion
+                        FROM cat_tipo_vialidad
                        WHERE activo = 1 ";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_tipo_vialidad] = $row->descripcion;
+                }
+            }
+            return $array;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
+    public function insertReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $insert = "INSERT INTO cat_calles(id_comunidad,
+                                          id_tipo_vialidad,
+                                          id_usuario_captura,
+                                          fecha_captura,
+                                          calle) 
+                                   VALUES(?,
+                                          ?,
+                                          ?,
+                                          NOW(),
+                                          ?)";
+                    // die($insert);
+
+        $result = $this->conn->prepare( $insert );
+        $exec->beginTransaction();
+        $result->execute( $data );
+
+        if($correcto == 1){
+            $correcto = $exec->lastInsertId();
+        }
+
+        $exec->commit();
+        return $correcto;
+    }
+
+
+    public function getRegbyid( $id ){
+        try{
+            $query = "SELECT id_calle,
+                             id_comunidad,
+                             id_tipo_vialidad,
+                             calle
+                        FROM cat_calles
+                       WHERE id_calle = $id";
 
             $result = $this->conn->prepare($query);
             $result->execute();
@@ -177,11 +254,30 @@ class cCalles extends BD
         }
     }
 
+
+    public function updateReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $update = "UPDATE cat_calles 
+                      SET id_comunidad        = ?,
+                          id_tipo_vialidad    = ?,
+                          id_usuario_modifica = ?,
+                          fecha_modifica      = NOW(),
+                          calle               = ?
+                    WHERE id_calle            = ? ";
+
+        $result = $this->conn->prepare($update);
+        $exec->beginTransaction();
+        $result->execute( $data );
+        $exec->commit();
+
+        return $correcto;
+    }
+
     public function closeOut(){
         $this->conn = null;
     }  
-
-
 
 }
 ?>
