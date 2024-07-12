@@ -603,7 +603,7 @@ class cUsers extends BD
                           U.edit,
                           U.elim,
                           U.new,
-                          U.externo,
+                          U.id_dir_ext,
                           R.rol
                      FROM ws_usuario AS U 
                 LEFT JOIN ws_rol AS R ON R.id_rol = U.id_rol
@@ -872,13 +872,13 @@ class cUsers extends BD
         $exec       = $this->conn->conexion();
 
         $update = " UPDATE ws_usuario
-                       SET nombre   = '".$this->getNombre()."', 
-                           apepa    = '".$this->getApepa()."',
-                           apema    = '".$this->getApema()."',
-                           usuario  = '" . $this->getUsuario() . "', 
-                           correo   = '" . $this->getCorreo() . "',
-                           sexo     = '" . $this->getSexo() . "'
-                     WHERE id_usuario = " . $this->getId_usuario();
+                       SET nombre     = '".$this->getNombre()."', 
+                           apepa      = '".$this->getApepa()."',
+                           apema      = '".$this->getApema()."',
+                           usuario    = '" . $this->getUsuario() . "', 
+                           correo     = '" . $this->getCorreo() . "',
+                           sexo       = '" . $this->getSexo() . "'
+                     WHERE id_usuario =  " . $this->getId_usuario()." ";
         $result = $this->conn->prepare($update);
         $exec->beginTransaction();
         $result->execute();

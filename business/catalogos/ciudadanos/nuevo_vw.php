@@ -138,31 +138,60 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                         </div>                                                        
                                                     </div>  
                                                     <div class="row">
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_t_c" 
                                                                         id="id_t_c"
                                                                         class="form-control">
                                                                     <option value=""></option>
+                                                                    <?php 
+                                                                        foreach ($get_tciudadanos as $key_c => $value_c) {
+                                                                            ?>
+                                                                                <option value="<?php echo $key_c?>"> <?php echo $value_c?> </option>
+                                                                            <?php
+                                                                        }
+                                                                    ?>
                                                                 </select>
                                                                 <label for="id_t_c">
                                                                     Tipo de ciudadano <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
                                                         </div>                            
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_t_t" 
                                                                         id="id_t_t"
                                                                         class="form-control">
-                                                                    
+                                                                    <option value=""></option>
+                                                                    <?php 
+                                                                        foreach ($get_tcontacto as $key_to => $value_to) {
+                                                                            ?>
+                                                                                <option value="<?php echo $key_to?>"> <?php echo $value_to?> </option>
+                                                                            <?php
+                                                                        }
+                                                                    ?>
                                                                 </select>
                                                                 <label for="id_t_t">
                                                                     Tipo de contacto <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
-                                                        </div>                            
-                                                        <div class="col-md-4">
+                                                        </div>     
+                                                    </div> 
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <select name="id_edo" 
+                                                                        id="id_edo"
+                                                                        class="form-control">
+                                                                    <option value=""></option>
+                                                                    <option value="15">Estado de México</option>
+                                                                </select>
+                                                                <label for="id_edo">
+                                                                    Estado <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>   
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_mpo" 
                                                                         id="id_mpo"
@@ -174,21 +203,29 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     Municipio <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
-                                                        </div>      
-                                                    </div> 
+                                                        </div>     
+                                                    </div>
                                                     <div class="row">
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_col" 
                                                                         id="id_col"
                                                                         class="form-control">
+                                                                    <option value=""></option>
+                                                                    <?php 
+                                                                        foreach ($get_comunidades as $key_cm => $value_cm) {
+                                                                            ?>
+                                                                                <option value="<?php echo $key_cm?>"> <?php echo $value_cm?> </option>
+                                                                            <?php
+                                                                        }
+                                                                    ?>
                                                                 </select>
                                                                 <label for="id_col">
                                                                     Comunidad <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
-                                                        </div>                                                                
-                                                        <div class="col-md-3">
+                                                        </div>  
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_calle" 
                                                                         id="id_calle"
@@ -198,8 +235,10 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     Calle <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
-                                                        </div>                                                                
-                                                        <div class="col-md-3">
+                                                        </div>    
+                                                    </div> 
+                                                    <div class="row">
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_calle_1" 
                                                                         id="id_calle_1"
@@ -209,8 +248,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     Entre calle
                                                                 </label>
                                                             </div>
-                                                        </div>                                
-                                                        <div class="col-md-3">
+                                                        </div> 
+                                                        <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_calle_2" 
                                                                         id="id_calle_2"
@@ -220,8 +259,85 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     Y calle
                                                                 </label>
                                                             </div>
+                                                        </div>                          
+                                                    </div>          
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="number" 
+                                                                       name="cp" 
+                                                                       id="cp"
+                                                                       class="form-control"
+                                                                       autocomplete="off" />
+                                                                <label for="cp">
+                                                                    Código postal <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>   
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="text" 
+                                                                       name="num_ext" 
+                                                                       id="num_ext"
+                                                                       class="form-control"
+                                                                       autocomplete="off" />
+                                                                <label for="num_ext">
+                                                                    Número exterior <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="text" 
+                                                                       name="num_int" 
+                                                                       id="num_int"
+                                                                       class="form-control"
+                                                                       autocomplete="off" />
+                                                                <label for="num_int">
+                                                                    Número interior
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="text" 
+                                                                       name="tel_fijo" 
+                                                                       id="tel_fijo"
+                                                                       class="form-control"
+                                                                       autocomplete="off" />
+                                                                <label for="tel_fijo">
+                                                                    Teléfono fijo
+                                                                </label>
+                                                            </div>
                                                         </div>                                
-                                                    </div>                                                 
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="text" 
+                                                                       name="tel_cel" 
+                                                                       id="tel_cel"
+                                                                       class="form-control"
+                                                                       autocomplete="off" />
+                                                                <label for="tel_cel">
+                                                                    Teléfono celular
+                                                                </label>
+                                                            </div>
+                                                        </div>  
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <input type="email" 
+                                                                       name="correo" 
+                                                                       id="correo" 
+                                                                       class="form-control"
+                                                                       autocomplete="off" 
+                                                                       required />
+                                                                <label for="correo">
+                                                                    Email <span class="text-danger">*</span>
+                                                                </label>
+                                                            </div>
+                                                        </div>                                                          
+                                                    </div>                                  
                                                 </fieldset>
                                                 <fieldset>
                                                     <div class="row">

@@ -277,6 +277,104 @@ class cCiudadanos extends BD
         }
     }
 
+
+    public function getCallesById( $id_colonia ){
+        $array = array();
+
+        try{
+            $query = "SELECT id_calle,
+                             calle
+                        FROM cat_calles
+                       WHERE id_comunidad = $id_colonia";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_calle] = $row->calle;
+                }
+            }
+
+            return $array;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+    public function getCpById( $id_col ){
+        $cp = "";
+
+        try {
+            $query = "SELECT codigo
+                        FROM cat_comunidad
+                       WHERE id_comunidad = $id_col";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                $row = $result->fetch(PDO::FETCH_OBJ);
+                $cp = $row->codigo;
+            }
+            return $cp;
+        } catch (\Throwable $th) {
+            return "Error: ".$th->getMessage();
+        }
+    }
+
+
+    public function insertReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $insert = "INSERT INTO cat_ciudadano(id_tipo_ciudadano,
+                                             id_tipo_contacto,
+                                             id_municipio,
+                                             id_colonia,
+                                             id_calle,
+                                             id_entre_calle,
+                                             id_entre_calle2,
+                                             id_usuario_captura,
+                                             fecha_captura,
+                                             nombre,
+                                             apepa,
+                                             apemat,
+                                             numero_exterior,
+                                             numero_interior,
+                                             cp,
+                                             telefono_fijo,
+                                             telefono_cel,
+                                             email)
+                                      VALUES(?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             NOW(),
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?,
+                                             ?)";
+
+        $result = $this->conn->prepare($insert);
+        $exec->beginTransaction();
+        $result->execute( $data );
+
+        if($correcto == 1){
+            $correcto = $exec->lastInsertId();
+        }
+
+        $exec->commit();
+        return $correcto;
+    }
+
     public function closeOut(){
         $this->conn = null;
     }  
