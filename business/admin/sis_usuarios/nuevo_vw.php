@@ -27,9 +27,9 @@ $cNuevo   = new cUsers();
 
 include 'business/sys/check_session.php';
 
-$direccion = ( isset($_SESSION[array_data_dr]) && !empty($_SESSION[array_data_dr]) ) ? $_SESSION[array_data_dr] : '';
-$get_roles = $cNuevo->getRoles( $_SESSION[id_rol] );
-
+$direccion    = ( isset($_SESSION[array_data_dr]) && !empty($_SESSION[array_data_dr]) ) ? $_SESSION[array_data_dr] : '';
+$get_roles    = $cNuevo->getRoles( $_SESSION[id_rol] );
+$get_externas = $cNuevo->getDepExternas();
 
 ?>
 <!DOCTYPE html>
@@ -239,7 +239,26 @@ $get_roles = $cNuevo->getRoles( $_SESSION[id_rol] );
                                                         </div>
                                                     </div>
                                                     <div class="row">
-                                                    <?php 
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <select name="id_dir_ext" 
+                                                                        id="id_dir_ext"
+                                                                        class="form-control">
+                                                                    <option value="">Seleccione una opción</option>
+                                                                    <?php 
+                                                                    foreach ($get_externas as $key_e => $value_e) {
+                                                                        ?>
+                                                                            <option value="<?php echo $key_e?>"> <?php echo $value_e?> </option>
+                                                                        <?php
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <label for="id_dir_ext">
+                                                                    Dependencia Externa
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <?php 
                                                         if(isset($_SESSION[admin]) && $_SESSION[admin] == 1){
                                                             ?>
                                                             <div class="col-md-4">

@@ -173,9 +173,9 @@ $array_permisos_roles = array("1", "2");
                                                 $activo       = $rowReg->activo;     
                                                 $rol          = $rowReg->rol;     
                                                 $id_direccion = $rowReg->id_direccion;       
-                                                $externo      = $rowReg->externo;   
+                                                $externo      = $rowReg->id_dir_ext;   
 
-                                                $dependencia = ( $externo == 1 ) ? $externo : $id_direccion;
+                                                $dependencia = ( $externo != "" ) ? $externo : $id_direccion;
 
                                                 if($activo == 1){
                                                     $showEstatus = "fa fa-check-circle text-success";

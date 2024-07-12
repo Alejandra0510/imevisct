@@ -56,15 +56,18 @@ if(!isset($_SESSION[_editar_]) || !is_numeric($_SESSION[_editar_]) || $_SESSION[
         $apepa        = $arrEdi->apepa;           
         $apema        = $arrEdi->apema;           
         $correo       = $arrEdi->correo;           
-        $admin        = $arrEdi->admin;           
+        $admin        = $arrEdi->admin; 
+        $id_dir_ext   = $arrEdi->id_dir_ext;
     } else {
         $showinfo = false;
     }
 
 }
 
-$direccion = ( isset($_SESSION[array_data_dr]) && !empty($_SESSION[array_data_dr]) ) ? $_SESSION[array_data_dr] : '';
-$get_roles = $cEditar->getRoles( $_SESSION[id_rol] );
+$direccion    = ( isset($_SESSION[array_data_dr]) && !empty($_SESSION[array_data_dr]) ) ? $_SESSION[array_data_dr] : '';
+$get_roles    = $cEditar->getRoles( $_SESSION[id_rol] );
+$get_externas = $cEditar->getDepExternas();
+
 
 
 ?>
@@ -252,6 +255,29 @@ $get_roles = $cEditar->getRoles( $_SESSION[id_rol] );
                                                             </select>
                                                             <label for="id_area">
                                                                 Área
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <select name="id_dir_ext" 
+                                                                    id="id_dir_ext"
+                                                                    class="form-control">
+                                                                <option value="">Seleccione una opción</option>
+                                                                <?php 
+                                                                foreach ($get_externas as $key_e => $value_e) {
+                                                                    $sel_e = "";
+                                                                    if($key_e == $id_dir_ext){
+                                                                        $sel_e = "selected";
+                                                                    }
+                                                                    ?>
+                                                                        <option value="<?php echo $key_e?>" <?php echo $sel_e?> > <?php echo $value_e?> </option>
+                                                                    <?php
+                                                                }
+                                                                ?>
+                                                            </select>
+                                                            <label for="id_dir_ext">
+                                                                Dependencia Externa
                                                             </label>
                                                         </div>
                                                     </div>

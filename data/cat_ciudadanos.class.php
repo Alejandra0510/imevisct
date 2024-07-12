@@ -99,6 +99,29 @@ class cCiudadanos extends BD
     }
 
 
+    private $arraySearch;
+
+    /**
+     * Get the value of arraySearch
+     */ 
+    public function getArraySearch()
+    {
+        return $this->arraySearch;
+    }
+
+    /**
+     * Set the value of arraySearch
+     *
+     * @return  self
+     */ 
+    public function setArraySearch($arraySearch)
+    {
+        $this->arraySearch = $arraySearch;
+
+        return $this;
+    }
+
+
     public function getAllReg(){
         $milimite = "";
         $condition = "";
@@ -108,15 +131,28 @@ class cCiudadanos extends BD
         }
 
         if ($this->getFiltro() != "") {
-        //    $array_f = $this->getArraySearch();
 
-        //     if(isset($array_f["rolb"]) && $array_f["rolb"] != ""){
-        //         $condition .= " AND rol LIKE '%".$array_f["rolb"]."%' ";
-        //     }
+            $array_f = $this->getArraySearch();
 
-        //     if(isset($array_f["desb"]) && $array_f["desb"] != ""){
-        //         $condition .= " AND descripcion LIKE '%".$array_f["desb"]."%' ";
-            // }
+            if(isset($array_f["ciu_b"]) && $array_f["ciu_b"] != ""){
+                $condition .= " AND CONCAT_WS(' ', c.nombre, c.apepat, c.apemat ) LIKE '%".$array_f["ciu_b"]."%' ";
+            }
+
+            if(isset($array_f["col_b"]) && $array_f["col_b"] != ""){
+                $condition .= " AND c.id_colonia = ".$array_f["col_b"]." ";
+            }
+
+            if(isset($array_f["mun_b"]) && $array_f["mun_b"] != ""){
+                $condition .= " AND c.id_municipio = ".$array_f["mun_b"]." ";
+            }
+
+            if(isset($array_f["ctt_b"]) && $array_f["ctt_b"] != ""){
+                $condition .= " AND c.id_tipo_contacto = ".$array_f["ctt_b"]." ";
+            }
+
+            if(isset($array_f["tcd_b"]) && $array_f["tcd_b"] != ""){
+                $condition .= " AND c.id_tipo_ciudadano = ".$array_f["tcd_b"]." ";
+            }
         }
 
         $query = " SELECT c.id_ciudadano, 
@@ -144,10 +180,106 @@ class cCiudadanos extends BD
         return $result;
     }
 
+
+    public function getComunidades(){
+        $array = array();
+
+        try{
+
+            $query = "SELECT id_comunidad,
+                             colonia
+                        FROM cat_comunidad
+                       WHERE activo = 1 
+                    ORDER BY colonia ASC";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_comunidad] = $row->colonia;
+                }
+            }
+            return $array;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+    public function getMunicipios(){
+        $array = array();
+
+        try{
+            $query = "SELECT id_municipio,
+                             municipio
+                        FROM cat_municipios
+                       WHERE activo = 1 
+                         AND id_municipio = 105
+                    ORDER BY municipio ASC";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_municipio] = $row->municipio;
+                }
+            }
+            return $array;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
+    public function getTCiudadanos(){
+        $array = array();
+
+        try{
+            $query = "SELECT id_tipo_ciudadano,
+                             tipo_ciudadano
+                        FROM cat_tipo_ciudadano
+                       WHERE activo = 1 ";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_tipo_ciudadano] = $row->tipo_ciudadano;
+                }
+            }
+            return $array;
+
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
+    public function getTContacto(){
+        $array = array();
+
+        try{
+            $query = "SELECT id_tipo_contacto,
+                             tipo_contacto
+                        FROM cat_tipo_contacto
+                       WHERE activo = 1 ";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_tipo_contacto] = $row->tipo_contacto;
+                }
+            }
+            return $array;
+
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
     public function closeOut(){
         $this->conn = null;
     }  
-
 
 
 }

@@ -657,7 +657,7 @@ class cUsers extends BD
                            u.admin, 
                            u.id_area,
                            r.rol,
-                           u.externo
+                           u.id_dir_ext
                       FROM ws_usuario as u
                  LEFT JOIN ws_rol as r on u.id_rol = r.id_rol
                      WHERE 1 = 1
@@ -702,12 +702,40 @@ class cUsers extends BD
         }
     }
 
+
+    public function getDepExternas(){
+        
+        $array = array();
+
+        try{
+            $query = "SELECT id_dependencia,
+                             prefijo,
+                             direccion
+                        FROM cat_dependencia_externa
+                       WHERE activo = 1 ";
+                    // die($query);
+            
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                while($row = $result->fetch(PDO::FETCH_OBJ)){
+                    $array[$row->id_dependencia] = '('.$row->prefijo.')'.' '.$row->direccion;
+                }
+            }
+            return $array;
+
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
     public function getRegbyid(){
 
         $query = "  SELECT id_usuario, 
                            id_rol, 
                            id_direccion, 
                            id_area,
+                           id_dir_ext,
                            usuario, 
                            id_genero, 
                            nombre, 
@@ -992,7 +1020,7 @@ class cUsers extends BD
                                           clave,
                                           correo,
                                           img,
-                                          externo,
+                                          id_dir_ext,
                                           imp,
                                           edit,
                                           new,
@@ -1080,7 +1108,7 @@ class cUsers extends BD
                            correo          = ?,
                            admin           = ?,
                            img             = ?,
-                           externo         = ?
+                           id_dir_ext      = ?
                      WHERE id_usuario      = ?";
 
         $result = $this->conn->prepare($update);

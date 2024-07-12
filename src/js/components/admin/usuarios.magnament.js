@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     $('#id_t_usr').select2();
     $('#id_rol_usr').select2();
+    $('#id_dir_ext').select2();
 
     if(area_val != null){
         getApiAreaDtl( area_val );

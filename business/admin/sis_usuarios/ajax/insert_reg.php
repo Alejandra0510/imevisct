@@ -22,7 +22,8 @@ $password         = "";
 $correo           = "";       
 $genero           = "";       
 $id_direccion     = "";               
-$id_area          = "";           
+$id_area          = ""; 
+$id_dir_ext       = "";
 $id_t_usr         = "";           
 $id_rol_usr       = ""; 
 $permiso_imp      = array();   
@@ -63,7 +64,7 @@ try{
 
     $id_usr_cap = $_SESSION[id_usr];
 
-    $externo   = ( $id_direccion == "" || $id_direccion == NULL ) ? 1 : NULL;
+    $externo   = ($id_dir_ext == "") ? NULL : $id_dir_ext;
     $direccion = ($id_direccion == "") ? NULL : $id_direccion;
     $area      = ($id_area == "") ? NULL : $id_area;
 

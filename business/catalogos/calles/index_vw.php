@@ -212,29 +212,29 @@ $get_comunidades = $cLista->getComunidades();
                                                                             </a>
                                                                             <?php
                                                                         }
-                                                                        if($_SESSION[elim] == 1){
-                                                                            ?>
-                                                                            <a  onclick="handleDeleteReg(<?php echo $id_calle.','.$bajaAlta ?>, 1)" 
-                                                                                data-toggle="tooltip"
-                                                                                class="btn ink-reaction btn-icon-toggle" 
-                                                                                data-placement="top" 
-                                                                                title="<?php echo $titleAB?>">
-                                                                                <span class="<?php echo $icoAB?>"></span>
-                                                                            </a>
-                                                                            <?php
-                                                                        }   
                                                                     }
 
-                                                                    if($_SESSION[elim] == 1 && $_SESSION[admin] == 1){
-                                                                        ?>
-                                                                        <a  onclick="handleDeleteReg(<?php echo $id_calle?>, 3)" 
+                                                                    if($_SESSION[elim] == 1){
+                                                                    ?>
+                                                                        <a  onclick="handleDeleteReg(<?php echo $id_calle.','.$bajaAlta ?>, 1)" 
                                                                             data-toggle="tooltip"
                                                                             class="btn ink-reaction btn-icon-toggle" 
                                                                             data-placement="top" 
-                                                                            title="Eliminar">
-                                                                            <span class="fa fa-trash"></span>
+                                                                            title="<?php echo $titleAB?>">
+                                                                            <span class="<?php echo $icoAB?>"></span>
                                                                         </a>
                                                                         <?php
+                                                                        if($_SESSION[admin] == 1){
+                                                                            ?>
+                                                                            <a  onclick="handleDeleteReg(<?php echo $id_calle?>, 3)" 
+                                                                                data-toggle="tooltip"
+                                                                                class="btn ink-reaction btn-icon-toggle" 
+                                                                                data-placement="top" 
+                                                                                title="Eliminar">
+                                                                                <span class="fa fa-trash"></span>
+                                                                            </a>
+                                                                            <?php
+                                                                        }
                                                                     }
                                                                     ?>
                                                                 </td>

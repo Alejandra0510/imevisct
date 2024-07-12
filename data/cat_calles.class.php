@@ -122,6 +122,30 @@ class cCalles extends BD
     }
 
 
+    private $id_calle;
+
+    /**
+     * Get the value of id_calle
+     */ 
+    public function getId_calle()
+    {
+        return $this->id_calle;
+    }
+
+    /**
+     * Set the value of id_calle
+     *
+     * @return  self
+     */ 
+    public function setId_calle($id_calle)
+    {
+        $this->id_calle = $id_calle;
+
+        return $this;
+    }
+
+
+
     public function getAllReg(){
         $milimite = "";
         $condition = "";
@@ -184,6 +208,7 @@ class cCalles extends BD
             return "Error: ".$e->getMessage();
         }
     }
+    
     public function getVialidades(){
         $array = array();
 
@@ -272,6 +297,34 @@ class cCalles extends BD
         $result->execute( $data );
         $exec->commit();
 
+        return $correcto;
+    }
+
+    public function updateStatus($tipo){
+        $correcto   = 1;        
+        
+        $update = " UPDATE cat_calles 
+                       SET activo   = $tipo
+                     WHERE id_calle = ".$this->getId_calle();
+
+        $result = $this->conn->prepare($update);
+        $result->execute();
+        $result = null;
+        $this->conn = null;
+        return $correcto;
+
+    }
+
+    public function deleteReg(){
+        $correcto   = 2;
+        
+        $delete = "DELETE FROM cat_calles 
+                         WHERE id_calle = ".$this->getId_calle();   
+
+        $result = $this->conn->prepare($delete);
+        $result->execute();
+        $result = null;
+        $this->conn = null;
         return $correcto;
     }
 

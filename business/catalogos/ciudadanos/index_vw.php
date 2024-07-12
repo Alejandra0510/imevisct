@@ -19,7 +19,7 @@ $real_sis   = "catalogos/ciudadanos";
 
 include_once $dir_fc."common/function.class.php";
 include_once $dir_fc."data/inicial.class.php";
-include_once $dir_fc."data/ciudadanos.class.php";
+include_once $dir_fc."data/cat_ciudadanos.class.php";
 
 $cInicial = new cInicial();
 $cLista   = new cCiudadanos();
@@ -52,6 +52,8 @@ if ($busqueda == "") {
     $MSJresult = $cFn->custom_alert("info", " ", "Resultados encontrados con la busqueda: " . $busqueda . "", 1, 1);
 }
 
+if(isset($_SESSION[array_filtros])){ $cLista->setArraySearch( $_SESSION[array_filtros]); }
+
 $cLista->setFiltro( $filtro );
 $cLista->setInicio( $inicio );
 $cLista->setFin( $registros );
@@ -65,6 +67,13 @@ $cLista->setLimite(1);
 $rsRegShow = $cLista->getAllReg();
 
 $ruta_app = "";
+
+$get_comunidades = $cLista->getComunidades();
+$get_municipios  = $cLista->getMunicipios();
+$get_tciudadanos = $cLista->getTCiudadanos();
+$get_tcontacto   = $cLista->getTContacto();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -125,7 +134,7 @@ $ruta_app = "";
                                 <div class="navbar-search">
                                     <button type="button" 
                                             class="btn btn-icon-toggle ink-reaction"
-                                            id="btn_search">
+                                            id="btnSearch">
                                         <i class="fa fa-search"></i>    
                                     </button>
                                 </div>
@@ -192,7 +201,7 @@ $ruta_app = "";
                                                                 </td>
                                                                 <td class="text-center"><?php echo $id_ciudadano?></td>
                                                                 <td class="text-center"><?php echo $nombre_completo?></td>
-                                                                <td class="text-center"><?php echo $domicilio?></td>
+                                                                <td class="text-justify"><?php echo $domicilio?></td>
                                                                 <td class="text-center">
                                                                     <a href="javascript:void(0)"
                                                                        onclick="openMyLink(0, <?php echo $id_ciudadano?>, '<?php echo $param.'ver&pag='.$pag.$fPaginacion?>')"
@@ -216,29 +225,29 @@ $ruta_app = "";
                                                                             </a>
                                                                             <?php
                                                                         }
-                                                                        if($_SESSION[elim] == 1){
-                                                                            ?>
-                                                                            <a  onclick="handleDeleteReg(<?php echo $id_ciudadano.','.$bajaAlta ?>, 1)" 
-                                                                                data-toggle="tooltip"
-                                                                                class="btn ink-reaction btn-icon-toggle" 
-                                                                                data-placement="top" 
-                                                                                title="<?php echo $titleAB?>">
-                                                                                <span class="<?php echo $icoAB?>"></span>
-                                                                            </a>
-                                                                            <?php
-                                                                        }   
-                                                                    }
+                                                                    } 
 
-                                                                    if($_SESSION[elim] == 1 && $_SESSION[admin] == 1){
-                                                                        ?>
-                                                                        <a  onclick="handleDeleteReg(<?php echo $id_ciudadano?>, 3)" 
+                                                                    if($_SESSION[elim] == 1){
+                                                                    ?>
+                                                                        <a  onclick="handleDeleteReg(<?php echo $id_ciudadano.','.$bajaAlta ?>, 1)" 
                                                                             data-toggle="tooltip"
                                                                             class="btn ink-reaction btn-icon-toggle" 
                                                                             data-placement="top" 
-                                                                            title="Eliminar">
-                                                                            <span class="fa fa-trash"></span>
+                                                                            title="<?php echo $titleAB?>">
+                                                                            <span class="<?php echo $icoAB?>"></span>
                                                                         </a>
                                                                         <?php
+                                                                        if($_SESSION[admin] == 1){
+                                                                        ?>
+                                                                            <a  onclick="handleDeleteReg(<?php echo $id_ciudadano?>, 3)" 
+                                                                                data-toggle="tooltip"
+                                                                                class="btn ink-reaction btn-icon-toggle" 
+                                                                                data-placement="top" 
+                                                                                title="Eliminar">
+                                                                                <span class="fa fa-trash"></span>
+                                                                            </a>
+                                                                        <?php
+                                                                        }
                                                                     }
                                                                     ?>
                                                                 </td>
@@ -269,5 +278,126 @@ $ruta_app = "";
         <?php include($dir_fc."inc/menucommon.php")?>
     </div>
     <?php include("dist/components/ciudadanos.php");?>
+      <!-- Modal Search -->
+      <div class="modal small fade" id="idModalSearch" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h3 class="modal-title">
+                        Búsqueda Avanzada
+                    </h3>
+                </div>              
+                <form role="form" id="frmSearch" class="form">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group floating-label">
+                                    <input 
+                                        type="text" 
+                                        class="form-control dirty" 
+                                        name="txtBuscar" 
+                                        id="txtBuscar" 
+                                        autocomplete="off"/>
+                                    <label for="txtBuscar">
+                                        Ciudadano: <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <select name="mun_s" 
+                                            id="mun_s"
+                                            class="form-control">
+                                        <option value="">Seleccione una opción</option> 
+                                        <?php 
+                                        foreach ($get_municipios as $key => $value) {
+                                            ?>
+                                            <option value="<?php echo $key?>"> <?php echo $value?> </option>
+                                            <?php
+                                        }
+                                        ?>   
+                                    </select>
+                                    <label for="mun_s">
+                                        Municipio: <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <select name="col_s" 
+                                            id="col_s"
+                                            class="form-control">
+                                        <option value="">Seleccione una opción</option> 
+                                        <?php 
+                                        foreach ($get_comunidades as $key => $value) {
+                                            ?>
+                                            <option value="<?php echo $key?>"> <?php echo $value?> </option>
+                                            <?php
+                                        }
+                                        ?>   
+                                    </select>
+                                    <label for="col_s">
+                                        Comunidad: <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <select name="cont_s" 
+                                            id="cont_s"
+                                            class="form-control">
+                                        <option value="">Seleccione una opción</option> 
+                                        <?php 
+                                        foreach ($get_tcontacto as $key => $value) {
+                                            ?>
+                                                <option value="<?php echo $key?>"> <?php echo $value?> </option>
+                                            <?php
+                                        }
+                                        ?>   
+                                    </select>
+                                    <label for="cont_s">
+                                        Tipo de contacto: <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <select name="ciud_s" 
+                                            id="ciud_s"
+                                            class="form-control">
+                                        <option value="">Seleccione una opción</option> 
+                                        <?php
+                                        foreach ($get_tciudadanos as $key => $value) {
+                                            ?>
+                                                <option value="<?php echo $key?>"> <?php echo $value?> </option>
+                                            <?php
+                                        } 
+                                        ?>   
+                                    </select>
+                                    <label for="ciud_s">
+                                        Tipo de ciudadano: <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" 
+                                class="btn ink-reaction btn-danger" 
+                                data-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" 
+                                id="btn_search" 
+                                class="btn btn-success ink-reaction" >
+                            Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal Search -->
 </body>
 </html>
