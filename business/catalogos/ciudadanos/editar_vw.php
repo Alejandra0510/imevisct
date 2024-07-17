@@ -12,7 +12,7 @@ $checkMenu    = $server_name.$dir."/";
 $param        = "?controller=".$controller."&action=";
 
 $sys_id_men   = 5;
-$sys_tipo     = 0;
+$sys_tipo     = 1;
 
 $titulo_curr  = "Ciudadano"; 
 $ruta_app     = "";
@@ -23,21 +23,61 @@ include_once $dir_fc."data/cat_ciudadanos.class.php";
 
 $cInicial = new cInicial();
 $cFn      = new cFunction();
-$cNuevo   = new cCiudadanos();
+$cEditar  = new cCiudadanos();
 
 include 'business/sys/check_session.php';
 
-$get_comunidades = $cNuevo->getComunidades();
-$get_municipios  = $cNuevo->getMunicipios();
-$get_tciudadanos = $cNuevo->getTCiudadanos();
-$get_tcontacto   = $cNuevo->getTContacto();
+$showinfo    = true;
+$titulo_edi  = "Visualizando";
+
+if($_SESSION[_is_view_] == 1){
+    $titulo_edi = "Editando";
+}
+
+if(!isset($pag)){ $pag=1;}
+if(!isset($busqueda) || $busqueda == ""){ $busqueda = ""; }
+$return_paginacion = "&pag=".$pag."&busqueda=".$busqueda;
+
+if(!isset($_SESSION[_editar_]) || !is_numeric($_SESSION[_editar_]) || $_SESSION[_editar_]<= 0){
+    $showinfo = false;
+}else {
+    $id = $_SESSION[_editar_];
+    $rsEditar = $cEditar->getRegbyid( $id );
+    if ($rsEditar->rowCount() > 0) {
+        $arrEdi           = $rsEditar->fetch(PDO::FETCH_OBJ); 
+        $id_ciudadano      = $arrEdi->id_ciudadano;                          
+        $id_tipo_ciudadano = $arrEdi->id_tipo_ciudadano;                              
+        $id_tipo_contacto  = $arrEdi->id_tipo_contacto;                              
+        $id_municipio      = $arrEdi->id_municipio;                          
+        $id_colonia        = $arrEdi->id_colonia;                      
+        $id_calle          = $arrEdi->id_calle;                      
+        $id_entre_calle    = $arrEdi->id_entre_calle;                          
+        $id_entre_calle2   = $arrEdi->id_entre_calle2;                              
+        $nombre            = $arrEdi->nombre;                  
+        $apepat            = $arrEdi->apepat;                  
+        $apemat            = $arrEdi->apemat;                  
+        $numero_exterior   = $arrEdi->numero_exterior;                              
+        $numero_interior   = $arrEdi->numero_interior;                              
+        $cp                = $arrEdi->cp;              
+        $telefono_fijo     = $arrEdi->telefono_fijo;                          
+        $telefono_cel      = $arrEdi->telefono_cel;                          
+        $email             = $arrEdi->email;                  
+    } else {
+        $showinfo = false;
+    }
+
+}
+
+$get_comunidades = $cEditar->getComunidades();
+$get_municipios  = $cEditar->getMunicipios();
+$get_tciudadanos = $cEditar->getTCiudadanos();
+$get_tcontacto   = $cEditar->getTContacto();
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Nuevo <?php echo $titulo_curr?> | <?php echo $titulo_paginas?> </title>
+    <title> <?php echo $titulo_edi.' '.$titulo_curr?> | <?php echo $titulo_paginas?> </title>
     <meta content="" name="description"/>
     <meta content="" name="author"/>
     <?php include("dist/inc/headercommon.php"); ?>
@@ -65,36 +105,37 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                     </a>
                                 </li>
                                 <li class="active">
-                                    Nuevo <?php echo $titulo_curr?>
+                                    <?php echo $titulo_edi.' '.$titulo_curr?>
                                 </li>
                             </ol>
                         </div>
                     </div>
-                    <?php
-                        if($_SESSION[nuev] == "1"){
+                    <?php 
+                        if($_SESSION[edit] == "1" && $showinfo == true){
                             ?>
                             <div class="card">
                                 <div class="card-head style-accent-bright">
                                     <div class="tools pull-left">
-                                        <a href="<?php echo $param."index"?>"
-                                           class="btn ink-reaction btn-floating-action"
-                                           style="background-color: #00796b; color: #fff;"
-                                           title="Regresar a la lista">
+                                        <a href="<?php echo $param."index".$return_paginacion?>"
+                                        class="btn ink-reaction btn-floating-action"
+                                        style="background-color: #00796b; color: #fff;"
+                                        title="Regresar a la lista">
                                             <i class="fa fa-arrow-left"></i>
                                         </a>
                                     </div>
-                                    <header class="text-uppercase">
-                                        Creando nuevo <?php echo $titulo_curr?>
+                                    <header>
+                                        <?php echo $titulo_edi.' '.$titulo_curr?>
                                     </header>
                                 </div>
                                 <div class="card-body">
-                                    <form class="form" role="form" id="frm_new">
+                                    <form role="form" class="form" id="frm_edit" name="frm_edit">
+                                        <input type="hidden" name="id_ciudadano" id="id_ciudadano" value="<?php echo $id?>">
+                                        <input type="hidden" name="current_file" id="current_file" value="<?php echo $param?>">
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                <input type="hidden" name="current_file" id="current_file" value="<?php echo $param?>">
                                                 <fieldset>
                                                     <p class="lead">
-                                                        Datos del <?php echo $titulo_curr?>
+                                                        <?php echo 'Datos del '. $titulo_curr?>
                                                     </p>
                                                     <div class="row">
                                                         <div class="col-md-4">
@@ -104,6 +145,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        id="nombre"
                                                                        class="form-control"
                                                                        autocomplete="off"
+                                                                       value="<?php echo $nombre?>"
                                                                        required />
                                                                 <label for="nombre">
                                                                     Nombre(s) <span class="text-danger">*</span>
@@ -117,6 +159,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        id="apepa"
                                                                        class="form-control"
                                                                        autocomplete="off"
+                                                                       value="<?php echo $apepat?>"
                                                                        required />
                                                                 <label for="apepa">
                                                                     Apellido Paterno <span class="text-danger">*</span>
@@ -130,13 +173,14 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        id="apema"
                                                                        class="form-control"
                                                                        autocomplete="off"
+                                                                       value="<?php echo $apemat?>"
                                                                        required />
                                                                 <label for="apema">
                                                                     Apellido Materno <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
-                                                        </div>                                                        
-                                                    </div>  
+                                                        </div>            
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
@@ -146,8 +190,14 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     <option value=""></option>
                                                                     <?php 
                                                                         foreach ($get_tciudadanos as $key_c => $value_c) {
+                                                                            $sel_tc = "";
+                                                                            if($key_c == $id_tipo_ciudadano){
+                                                                                $sel_tc = "selected";
+                                                                            }
                                                                             ?>
-                                                                                <option value="<?php echo $key_c?>"> <?php echo $value_c?> </option>
+                                                                                <option value="<?php echo $key_c?>" <?php echo $sel_tc?> >
+                                                                                    <?php echo $value_c?> 
+                                                                                </option>
                                                                             <?php
                                                                         }
                                                                     ?>
@@ -165,8 +215,14 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     <option value=""></option>
                                                                     <?php 
                                                                         foreach ($get_tcontacto as $key_to => $value_to) {
+                                                                            $sel_tt = "";
+                                                                            if($key_to == $id_tipo_contacto){
+                                                                                $sel_tt = "selected";
+                                                                            }
                                                                             ?>
-                                                                                <option value="<?php echo $key_to?>"> <?php echo $value_to?> </option>
+                                                                                <option value="<?php echo $key_to?>" <?php echo $sel_tt ?>> 
+                                                                                    <?php echo $value_to?> 
+                                                                                </option>
                                                                             <?php
                                                                         }
                                                                     ?>
@@ -184,7 +240,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                         id="id_edo"
                                                                         class="form-control">
                                                                     <option value=""></option>
-                                                                    <option value="15">Estado de México</option>
+                                                                    <option value="15" selected>Estado de México</option>
                                                                 </select>
                                                                 <label for="id_edo">
                                                                     Estado <span class="text-danger">*</span>
@@ -197,7 +253,9 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                         id="id_mpo"
                                                                         class="form-control">
                                                                     <option value=""></option>
-                                                                    <option value="105">Tlalnepantla de Baz</option>
+                                                                    <option value="105" <?php if($id_municipio == "105"){ echo "selected"; }?>>
+                                                                        Tlalnepantla de Baz
+                                                                    </option>
                                                                 </select>
                                                                 <label for="id_mpo">
                                                                     Municipio <span class="text-danger">*</span>
@@ -214,8 +272,14 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                     <option value=""></option>
                                                                     <?php 
                                                                         foreach ($get_comunidades as $key_cm => $value_cm) {
+                                                                            $sel_cm = "";
+                                                                            if($key_cm == $id_colonia){
+                                                                                $sel_cm = "selected";
+                                                                            }
                                                                             ?>
-                                                                                <option value="<?php echo $key_cm?>"> <?php echo $value_cm?> </option>
+                                                                                <option value="<?php echo $key_cm?>" <?php echo $sel_cm?>> 
+                                                                                    <?php echo $value_cm?> 
+                                                                                </option>
                                                                             <?php
                                                                         }
                                                                     ?>
@@ -225,7 +289,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                 </label>
                                                             </div>
                                                         </div>  
-                                                        <input type="hidden" name="calle" id="calle">
+                                                        <input type="hidden" name="calle" id="calle" value="<?php echo $id_calle?>">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_calle" 
@@ -239,7 +303,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                         </div>    
                                                     </div> 
                                                     <div class="row">
-                                                        <input type="hidden" name="calle_1" id="calle_1">
+                                                        <input type="hidden" name="calle_1" id="calle_1" value="<?php echo $id_entre_calle?>">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <select name="id_calle_1" 
@@ -251,8 +315,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                 </label>
                                                             </div>
                                                         </div> 
+                                                        <input type="hidden" name="calle_2" id="calle_2" value="<?php echo $id_entre_calle2?>">
                                                         <div class="col-md-6">
-                                                            <input type="hidden" name="calle_2" id="calle_1">
                                                             <div class="form-group">
                                                                 <select name="id_calle_2" 
                                                                         id="id_calle_2"
@@ -263,7 +327,7 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                 </label>
                                                             </div>
                                                         </div>                          
-                                                    </div>          
+                                                    </div>  
                                                     <div class="row">
                                                         <div class="col-md-4">
                                                             <div class="form-group">
@@ -271,7 +335,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        name="cp" 
                                                                        id="cp"
                                                                        class="form-control"
-                                                                       autocomplete="off" />
+                                                                       autocomplete="off" 
+                                                                       value="<?php echo $cp?>"/>
                                                                 <label for="cp">
                                                                     Código postal <span class="text-danger">*</span>
                                                                 </label>
@@ -283,7 +348,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        name="num_ext" 
                                                                        id="num_ext"
                                                                        class="form-control"
-                                                                       autocomplete="off" />
+                                                                       autocomplete="off" 
+                                                                       value="<?php echo $numero_exterior?>"/>
                                                                 <label for="num_ext">
                                                                     Número exterior <span class="text-danger">*</span>
                                                                 </label>
@@ -295,13 +361,14 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        name="num_int" 
                                                                        id="num_int"
                                                                        class="form-control"
-                                                                       autocomplete="off" />
+                                                                       autocomplete="off" 
+                                                                       value="<?php echo $numero_interior?>"/>
                                                                 <label for="num_int">
                                                                     Número interior
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div>     
                                                     <div class="row">
                                                         <div class="col-md-4">
                                                             <div class="form-group">
@@ -309,7 +376,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        name="tel_fijo" 
                                                                        id="tel_fijo"
                                                                        class="form-control"
-                                                                       autocomplete="off" />
+                                                                       autocomplete="off" 
+                                                                       value="<?php echo $telefono_fijo?>" />
                                                                 <label for="tel_fijo">
                                                                     Teléfono fijo
                                                                 </label>
@@ -321,7 +389,8 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        name="tel_cel" 
                                                                        id="tel_cel"
                                                                        class="form-control"
-                                                                       autocomplete="off" />
+                                                                       autocomplete="off" 
+                                                                       value="<?php echo $telefono_cel?>" />
                                                                 <label for="tel_cel">
                                                                     Teléfono celular
                                                                 </label>
@@ -334,26 +403,33 @@ $get_tcontacto   = $cNuevo->getTContacto();
                                                                        id="correo" 
                                                                        class="form-control"
                                                                        autocomplete="off" 
-                                                                       required />
+                                                                       required 
+                                                                       value="<?php echo $email?>" />
                                                                 <label for="correo">
                                                                     Email <span class="text-danger">*</span>
                                                                 </label>
                                                             </div>
                                                         </div>                                                          
-                                                    </div>                                  
+                                                    </div>   
                                                 </fieldset>
                                                 <fieldset>
+                                                <?php 
+                                                if($_SESSION[_is_view_] == 1){
+                                                    ?>
                                                     <div class="row">
                                                         <div class="col-sm-12 col-md-4 col-xs-12 col-lg-4 col-md-offset-8">
                                                             <button type="submit" 
-                                                                    id="btn_guardar"
+                                                                    id="btn_guardar_e"
                                                                     class="btn ink-reaction btn-block btn-primary">
                                                                 <span class="glyphicon glyphicon-floppy-disk"></span> 
                                                                 Guardar
                                                             </button>
                                                         </div>  
                                                     </div>
-                                                </fieldset>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </fieldset>
                                             </div>
                                         </div>
                                     </form>
@@ -371,6 +447,5 @@ $get_tcontacto   = $cNuevo->getTContacto();
     </div>
     <?php include("dist/components/ciudadanos.magnament.php");?>
     <script src="dist/assets/js/select2.full.min.js"></script>
-
 </body>
 </html>

@@ -100,6 +100,7 @@ class cCiudadanos extends BD
 
 
     private $arraySearch;
+    private $id_ciudadano;
 
     /**
      * Get the value of arraySearch
@@ -117,6 +118,27 @@ class cCiudadanos extends BD
     public function setArraySearch($arraySearch)
     {
         $this->arraySearch = $arraySearch;
+
+        return $this;
+    }
+
+    
+    /**
+     * Get the value of id_ciudadano
+     */ 
+    public function getId_ciudadano()
+    {
+        return $this->id_ciudadano;
+    }
+
+    /**
+     * Set the value of id_ciudadano
+     *
+     * @return  self
+     */ 
+    public function setId_ciudadano($id_ciudadano)
+    {
+        $this->id_ciudadano = $id_ciudadano;
 
         return $this;
     }
@@ -322,6 +344,28 @@ class cCiudadanos extends BD
     }
 
 
+    public function getValidateUser( $name ){
+        $ciudadano = 0;
+        try{
+            $query = "SELECT COUNT(id_ciudadano) as total 
+                        FROM cat_ciudadano
+                       WHERE activo = 1 
+                         AND CONCAT_WS(' ', trim(nombre), trim(apepa), trim(apema)) = '$name'";
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            if($result->rowCount() > 0){
+                $row = $result->fetch(PDO::FETCH_OBJ);
+                $ciudadano = $row->total;
+            }
+
+            return $ciudadano;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
     public function insertReg( $data ){
         $correcto = 1;
         $exec     = $this->conn->conexion();
@@ -336,7 +380,7 @@ class cCiudadanos extends BD
                                              id_usuario_captura,
                                              fecha_captura,
                                              nombre,
-                                             apepa,
+                                             apepat,
                                              apemat,
                                              numero_exterior,
                                              numero_interior,
@@ -372,6 +416,100 @@ class cCiudadanos extends BD
         }
 
         $exec->commit();
+        return $correcto;
+    }
+
+
+    public function getRegbyid( $id ){
+        try{
+            $query = "SELECT id_ciudadano,
+                             id_tipo_ciudadano,
+                             id_tipo_contacto,
+                             id_municipio,
+                             id_colonia,
+                             id_calle,
+                             id_entre_calle,
+                             id_entre_calle2,
+                             nombre,
+                             apepat,
+                             apemat,
+                             numero_exterior,
+                             numero_interior,
+                             cp,
+                             telefono_fijo,
+                             telefono_cel,
+                             email
+                        FROM cat_ciudadano
+                       WHERE id_ciudadano = $id ";
+                // die($query);
+
+            $result = $this->conn->prepare($query);
+            $result->execute();
+            return $result;
+        }catch(\PDOException $e){
+            return "Error: ".$e->getMessage();
+        }
+    }
+
+
+    public function updateReg( $data ){
+        $correcto = 1;
+        $exec     = $this->conn->conexion();
+
+        $update = "UPDATE cat_ciudadano
+                      SET id_tipo_ciudadano   = ?,
+                          id_tipo_contacto    = ?,
+                          id_colonia          = ?,
+                          id_calle            = ?,
+                          id_entre_calle      = ?,
+                          id_entre_calle2     = ?,
+                          id_usuario_modifica = ?,
+                          fecha_modificacion  = NOW(),
+                          nombre              = ?,
+                          apepat              = ?,
+                          apemat              = ?,
+                          numero_exterior     = ?,
+                          numero_interior     = ?,
+                          cp                  = ?,
+                          telefono_fijo       = ?,
+                          telefono_cel        = ?,
+                          email               = ?
+                    WHERE id_ciudadano        = ?";
+
+        $result = $this->conn->prepare($update);
+        $exec->beginTransaction();
+        $result->execute( $data );
+        $exec->commit();
+
+        return $correcto;
+    }
+
+    
+    public function updateStatus($tipo){
+        $correcto   = 1;        
+        
+        $update = " UPDATE cat_ciudadano 
+                       SET activo   = $tipo
+                     WHERE id_ciudadano = ".$this->getId_ciudadano();
+
+        $result = $this->conn->prepare($update);
+        $result->execute();
+        $result = null;
+        $this->conn = null;
+        return $correcto;
+
+    }
+
+    public function deleteReg(){
+        $correcto   = 2;
+        
+        $delete = "DELETE FROM cat_ciudadano 
+                         WHERE id_ciudadano = ".$this->getId_ciudadano();   
+
+        $result = $this->conn->prepare($delete);
+        $result->execute();
+        $result = null;
+        $this->conn = null;
         return $correcto;
     }
 

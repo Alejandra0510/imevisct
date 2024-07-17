@@ -181,7 +181,9 @@ $get_tcontacto   = $cLista->getTContacto();
                                                             $calle           = $row_reg->calle;            
                                                             $activo          = $row_reg->activo;        
 
-                                                            $domicilio = $colonia.', '.$calle.' '.$numero_exterior.' '.$numero_interior.', Cp.'.$cp;
+                                                            $interior = ($numero_interior != "") ? 'int. '.$numero_interior : '';
+
+                                                            $domicilio = $colonia.', '.$calle.' '.$numero_exterior.' '.$interior.', Cp.'.$cp;
 
                                                             if($activo == 1){
                                                                 $showEstatus = "fa fa-check-circle text-success";

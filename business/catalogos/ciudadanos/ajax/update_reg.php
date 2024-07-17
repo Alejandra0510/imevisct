@@ -14,23 +14,24 @@ $done = false;
 $icon = "error";
 $resp = "";
 
-$nombre     = "";         
-$apepa      = "";         
-$apema      = "";         
-$id_t_c     = "";         
-$id_t_t     = "";         
-$id_edo     = "";         
-$id_mpo     = "";         
-$id_col     = "";         
-$id_calle   = "";             
-$id_calle_1 = "";             
-$id_calle_2 = "";             
-$cp         = "";     
-$num_ext    = ""; 
-$num_int    = "";
-$tel_fijo   = "";             
-$tel_cel    = "";   
-$correo     = "";
+$id_ciudadano = "";
+$nombre       = "";         
+$apepa        = "";         
+$apema        = "";         
+$id_t_c       = "";         
+$id_t_t       = "";         
+$id_edo       = "";         
+$id_mpo       = "";         
+$id_col       = "";         
+$id_calle     = "";             
+$id_calle_1   = "";             
+$id_calle_2   = "";             
+$cp           = "";     
+$num_ext      = ""; 
+$num_int      = "";
+$tel_fijo     = "";             
+$tel_cel      = "";   
+$correo       = "";
 
 $id_usr_cap = "";
 
@@ -38,10 +39,10 @@ extract($_REQUEST);
 
 try{
 
-    if(!isset($nombre) || !isset($apema)  || !isset($apepa)  || !isset($id_t_c)   || !isset($id_t_t) || 
-       !isset($id_edo) || !isset($id_mpo) || !isset($id_col) || !isset($id_calle) || $nombre == ""   ||
-       $apepa == ""    || $apema == ""    || $id_t_c == ""   || $id_t_t == ""     || $id_edo == ""   ||
-       $id_mpo == ""   || $id_col == ""   || $id_calle == ""){
+    if(!isset($nombre) || !isset($apema)  || !isset($apepa)  || !isset($id_t_c)   || !isset($id_t_t)       || 
+       !isset($id_edo) || !isset($id_mpo) || !isset($id_col) || !isset($id_calle) || !isset($id_ciudadano) ||
+       $nombre == ""   || $apepa == ""    || $apema == ""    || $id_t_c == ""     || $id_t_t == ""         || 
+       $id_edo == ""   || $id_mpo == ""   || $id_col == ""   || $id_calle == ""   || $id_ciudadano == ""){
         throw new Exception("No se recibieron correctamente los parámetros");
     }
 
@@ -55,44 +56,37 @@ try{
         }
     }
 
-    $nombre_c = $nombre.$apepa.$apema;
-    $validate_usr = $cData->getValidateUser( $nombre_c );
-    if($validate_usr >= 1){
-        throw new Exception("Ciudadano ya registrado");
-    }
-
     $id_usr_cap = $_SESSION[id_usr];
 
     $data = array(
         $id_t_c,
         $id_t_t,
-        $id_mpo,
         $id_col,
         $id_calle,
         $id_calle_1,
         $id_calle_2,
         $id_usr_cap,
         $cFn->get_sub_string($nombre, 200),
-        $cFn->get_sub_string($apepa, 70),
-        $cFn->get_sub_string($apema, 100),
+        $cFn->get_sub_string($apepa, 200),
+        $cFn->get_sub_string($apema, 200),
         $num_ext,
         $num_int,
         $cp,
         $tel_fijo,
         $tel_cel,
-        $cFn->get_sub_string($correo, 80)
+        $cFn->get_sub_string($correo, 80),
+        $id_ciudadano
     );
-   
-    $insert = $cData->insertReg( $data );
-    if(!is_numeric($insert)){
+
+    $update = $cData->updateReg( $data );
+    if(!is_numeric($update)){
         $icon = "error";
-        throw new Exception("No se pudo crear el registro");
+        throw new Exception("Error al actualizar el registro");
     }
 
     $done = true;
     $icon = "success";
-    $resp = "Registro creado correctamente";
-
+    $resp = "Registro editado correctamente";
     
 }catch(\Exception $e){
     $resp .= $e->getMessage();

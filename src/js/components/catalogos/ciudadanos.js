@@ -96,7 +96,7 @@ const changeStatus = (id, status) => {
     data.append('id', id);
     data.append('tipo', status);
 
-    const url = 'business/catalogos/calles/ajax/update_status.php';
+    const url = 'business/catalogos/ciudadanos/ajax/update_status.php';
 
     fetch(url, {
             method: 'POST',
